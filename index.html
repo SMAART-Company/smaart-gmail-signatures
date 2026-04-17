@@ -25,8 +25,12 @@
   .panel { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 22px; }
   .panel h2 { margin: 0 0 16px; font-size: 15px; font-weight: 700; color: var(--navy); letter-spacing: 0.2px; }
   label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin: 12px 0 6px; text-transform: uppercase; letter-spacing: 0.4px; }
-  input, select { width: 100%; padding: 9px 11px; border: 1px solid var(--line); border-radius: 6px; font-size: 14px; font-family: inherit; outline: none; }
-  input:focus, select:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(13,0,76,0.08); }
+  input, select, textarea { width: 100%; padding: 9px 11px; border: 1px solid var(--line); border-radius: 6px; font-size: 14px; font-family: inherit; outline: none; }
+  input:focus, select:focus, textarea:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(13,0,76,0.08); }
+  textarea { resize: vertical; min-height: 64px; line-height: 1.45; }
+  input[type="checkbox"] { width: auto; margin-right: 8px; vertical-align: middle; accent-color: var(--navy); }
+  label.toggle { display: flex; align-items: center; text-transform: none; font-size: 13px; font-weight: 500; color: var(--ink); margin: 8px 0; letter-spacing: 0; }
+  .hint { color: var(--muted); font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 11px; margin-left: 4px; }
   .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .actions { margin-top: 20px; display: flex; gap: 10px; }
   button { background: var(--navy); color: #fff; border: 0; padding: 11px 16px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
@@ -53,7 +57,8 @@
       <option value="albert-amarente">Albert Amarente</option>
       <option value="alex">Alex</option>
       <option value="anthony">Anthony</option>
-      <option value="daniel-corcega">Daniel Corcega</option>
+      <option value="daniel">Daniel Corcega</option>
+      <option value="daniel-corcega">Daniel Corcega (legacy path)</option>
       <option value="gus">Gus</option>
       <option value="lisa">Lisa</option>
       <option value="lorri-hill">Lorri Hill</option>
@@ -64,8 +69,10 @@
     <input id="photoSize" type="range" min="48" max="160" step="4" value="96" />
     <label for="fullName">Full name</label>
     <input id="fullName" placeholder="Jane Doe" value="" />
-    <label for="title">Title</label>
-    <input id="title" placeholder="Account Executive" value="" />
+    <label for="title">Title(s) <span class="hint">one per line — e.g. "CMO" then "Lead Gen Director"</span></label>
+    <textarea id="title" rows="2" placeholder="Account Executive"></textarea>
+    <label class="toggle"><input type="checkbox" id="showCompany" checked />Show "· SMAART Company" beside first title line</label>
+
     <div class="row">
       <div>
         <label for="email">Email</label>
@@ -78,6 +85,15 @@
     </div>
     <label for="phoneE164">Phone (tel: link, E.164, optional)</label>
     <input id="phoneE164" placeholder="+13051234567" value="" />
+    <label class="toggle"><input type="checkbox" id="showLabels" />Prefix contact lines with "T:" / "E:" and stack vertically</label>
+
+    <label for="websiteText">Website display text <span class="hint">optional — leave empty for "smaartcompany.com"</span></label>
+    <input id="websiteText" placeholder="www.SMAARTCompany.com" value="" />
+    <label for="websiteUrl">Website URL</label>
+    <input id="websiteUrl" value="https://smaartcompany.com" />
+
+    <label for="address">Address <span class="hint">optional — one line per address line</span></label>
+    <textarea id="address" rows="2" placeholder="2319 N Andrews Avenue&#10;Fort Lauderdale, FL 33311"></textarea>
 
     <h2 style="margin-top:22px;">Social links</h2>
     <label for="linkedin">LinkedIn</label>
@@ -91,8 +107,19 @@
     <label for="youtube">YouTube</label>
     <input id="youtube" value="https://www.youtube.com/@smaartcompany" />
 
+    <h2 style="margin-top:22px;">Card elements <span class="hint">toggle blocks on/off</span></h2>
+    <label class="toggle"><input type="checkbox" id="showLogo" checked />Show SMAART logo</label>
+    <label class="toggle"><input type="checkbox" id="showSocial" checked />Show social icons</label>
+    <label class="toggle"><input type="checkbox" id="showBar" checked />Show green vertical separator bar</label>
+    <label class="toggle"><input type="checkbox" id="showWebsite" checked />Show website line</label>
+    <label for="disclaimer">Disclaimer <span class="hint">leave empty to hide</span></label>
+    <textarea id="disclaimer" rows="3">This message is confidential. If you received it in error, please notify the sender and delete.</textarea>
+
+    <h2 style="margin-top:22px;">Advanced</h2>
     <label for="assetBase">Asset base URL</label>
     <input id="assetBase" value="https://cdn.jsdelivr.net/gh/SMAART-Company/smaart-gmail-signatures@main" />
+    <label for="cacheVer">Image cache version <span class="hint">bump when a photo/logo changes — forces Gmail image proxy to refetch</span></label>
+    <input id="cacheVer" value="3" />
 
     <div class="actions">
       <button id="copyBtn">Copy HTML</button>
@@ -122,63 +149,127 @@ const IS_LOCAL = ['localhost', '127.0.0.1', '0.0.0.0'].includes(location.hostnam
 function render({ forPreview = false } = {}) {
   const typedBase = $('assetBase').value.replace(/\/+$/, '');
   const effectiveBase = (forPreview && IS_LOCAL) ? location.origin : typedBase;
+  // Cache-buster for Gmail's image proxy (ci3.googleusercontent.com). The
+  // proxy caches by full URL for ~7 days from jsDelivr's max-age, so if an
+  // older version of the same path was ever served, a fresh paste still
+  // shows the stale image. Changing the URL forces the proxy to refetch.
+  const cacheBust = `?v=${$('cacheVer').value || '1'}`;
+  const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   const v = {
     ASSET_BASE: effectiveBase,
     PHOTO_SLUG: $('photoSlug').value,
     PHOTO_SIZE: parseInt($('photoSize').value, 10) || 96,
-    FULL_NAME: $('fullName').value,
+    FULL_NAME: $('fullName').value.trim(),
     TITLE: $('title').value,
-    EMAIL: $('email').value,
-    PHONE_DISPLAY: $('phone').value,
-    PHONE_E164: $('phoneE164').value,
+    SHOW_COMPANY: $('showCompany').checked,
+    EMAIL: $('email').value.trim(),
+    PHONE_DISPLAY: $('phone').value.trim(),
+    PHONE_E164: $('phoneE164').value.trim(),
+    SHOW_LABELS: $('showLabels').checked,
+    WEBSITE_TEXT: $('websiteText').value.trim(),
+    WEBSITE_URL: $('websiteUrl').value.trim(),
+    ADDRESS: $('address').value,
     LINKEDIN_URL: $('linkedin').value,
     FACEBOOK_URL: $('facebook').value,
     INSTAGRAM_URL: $('instagram').value,
     X_URL: $('xurl').value,
     YOUTUBE_URL: $('youtube').value,
+    SHOW_LOGO: $('showLogo').checked,
+    SHOW_SOCIAL: $('showSocial').checked,
+    SHOW_BAR: $('showBar').checked,
+    SHOW_WEBSITE: $('showWebsite').checked,
+    DISCLAIMER: $('disclaimer').value.trim(),
   };
 
   const fullName = v.FULL_NAME || 'Your Name';
-  const title = v.TITLE || 'Your Title';
+
+  // Title block — one <div> per non-empty line; first line optionally gets "· SMAART Company"
+  const titleLines = (v.TITLE || 'Your Title').split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+  const titleBlock = titleLines.length
+    ? titleLines.map((line, i) => {
+        const suffix = (i === 0 && v.SHOW_COMPANY) ? ' &middot; SMAART Company' : '';
+        const mb = (i === titleLines.length - 1) ? '10px' : '0';
+        return `<div style="font-size:13px;color:#4A4A4A;margin:2px 0 ${mb} 0;line-height:1.35;">${esc(line)}${suffix}</div>`;
+      }).join('')
+    : '';
 
   const photoCell = v.PHOTO_SLUG
-    ? `<td style="padding:0 20px 0 0;vertical-align:top;"><img src="${v.ASSET_BASE}/team-images/${v.PHOTO_SLUG}.jpg" width="${v.PHOTO_SIZE}" height="${v.PHOTO_SIZE}" alt="${fullName}" style="display:block;width:${v.PHOTO_SIZE}px;height:${v.PHOTO_SIZE}px;border-radius:${v.PHOTO_SIZE}px;" /></td>`
+    ? `<td style="padding:0 20px 0 0;vertical-align:top;"><img src="${v.ASSET_BASE}/team-images/${v.PHOTO_SLUG}.jpg${cacheBust}" width="${v.PHOTO_SIZE}" height="${v.PHOTO_SIZE}" alt="${esc(fullName)}" style="display:block;width:${v.PHOTO_SIZE}px;height:${v.PHOTO_SIZE}px;border-radius:${v.PHOTO_SIZE}px;" /></td>`
     : '';
 
-  const emailPart = v.EMAIL
-    ? `<a href="mailto:${v.EMAIL}" style="color:#0D004C;text-decoration:none;">${v.EMAIL}</a>`
+  // Contact block — two styles: stacked with T:/E: labels, or inline with middot.
+  // Phone shows if EITHER field is filled; display takes priority, falls back to
+  // whatever's in the E.164 field (we don't enforce format — user can type
+  // anything clickable).
+  const phoneShown = v.PHONE_DISPLAY || v.PHONE_E164;
+  const phoneTelDigits = (v.PHONE_E164 || v.PHONE_DISPLAY || '').replace(/[^+\d]/g, '');
+  const mailHref = v.EMAIL ? `mailto:${v.EMAIL}` : '';
+  const telHref = phoneShown ? `tel:${phoneTelDigits}` : '';
+  const linkStyle = 'color:#0D004C;text-decoration:none;';
+  const emailPart = v.EMAIL ? `<a href="${mailHref}" style="${linkStyle}">${esc(v.EMAIL)}</a>` : '';
+  const phonePart = phoneShown ? `<a href="${telHref}" style="${linkStyle}">${esc(phoneShown)}</a>` : '';
+  let contactBlock = '';
+  if (v.SHOW_LABELS) {
+    const rows = [];
+    if (phonePart) rows.push(`<div style="font-size:13px;color:#111111;"><span style="color:#6B7280;">T:</span> ${phonePart}</div>`);
+    if (emailPart) rows.push(`<div style="font-size:13px;color:#111111;"><span style="color:#6B7280;">E:</span> ${emailPart}</div>`);
+    contactBlock = rows.join('');
+  } else {
+    const inline = (emailPart && phonePart) ? `${emailPart}&nbsp;&middot;&nbsp;${phonePart}` : (emailPart || phonePart);
+    contactBlock = inline ? `<div style="font-size:13px;color:#111111;">${inline}</div>` : '';
+  }
+
+  // Website line
+  let websiteBlock = '';
+  if (v.SHOW_WEBSITE && (v.WEBSITE_URL || v.WEBSITE_TEXT)) {
+    const url = v.WEBSITE_URL || 'https://smaartcompany.com';
+    const text = v.WEBSITE_TEXT || url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+    websiteBlock = `<div style="font-size:13px;margin-top:2px;"><a href="${esc(url)}" style="color:#0D004C;text-decoration:none;font-weight:600;">${esc(text)}</a></div>`;
+  }
+
+  // Address block
+  const addrLines = v.ADDRESS.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+  const addressBlock = addrLines.length
+    ? `<div style="font-size:12px;color:#4A4A4A;margin-top:6px;line-height:1.4;">${addrLines.map(esc).join('<br />')}</div>`
     : '';
-  const phonePart = v.PHONE_DISPLAY
-    ? `<a href="tel:${v.PHONE_E164 || v.PHONE_DISPLAY.replace(/[^+\d]/g,'')}" style="color:#0D004C;text-decoration:none;">${v.PHONE_DISPLAY}</a>`
+
+  // Logo + social row
+  const logoCell = v.SHOW_LOGO
+    ? `<td style="padding:0 14px 0 0;vertical-align:middle;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="28" style="display:block;height:28px;border:0;" /></a></td>`
     : '';
-  const contactLine = (emailPart && phonePart)
-    ? `${emailPart}&nbsp;&middot;&nbsp;${phonePart}`
-    : (emailPart || phonePart);
-  const contactRow = contactLine
-    ? `<div style="font-size:13px;color:#111111;">${contactLine}</div>`
+  const socialCells = v.SHOW_SOCIAL ? [
+    ['linkedin', 'LinkedIn', v.LINKEDIN_URL],
+    ['facebook', 'Facebook', v.FACEBOOK_URL],
+    ['instagram', 'Instagram', v.INSTAGRAM_URL],
+    ['x', 'X', v.X_URL],
+    ['youtube', 'YouTube', v.YOUTUBE_URL],
+  ].map(([slug, label, url], i) => {
+    const pad = i === 0 ? '0 6px 0 0' : '0 6px';
+    return `<td style="padding:${pad};vertical-align:middle;"><a href="${esc(url)}"><img src="${v.ASSET_BASE}/social-icons/${slug}.png${cacheBust}" alt="${label}" width="22" height="22" style="display:block;width:22px;height:22px;border:0;" /></a></td>`;
+  }).join('') : '';
+  const iconRow = (v.SHOW_LOGO || v.SHOW_SOCIAL)
+    ? `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-top:12px;border-collapse:collapse;"><tr>${logoCell}${socialCells}</tr></table>`
     : '';
+
+  const disclaimerBlock = v.DISCLAIMER
+    ? `<div style="font-size:11px;color:#8A8A8A;margin-top:10px;line-height:1.4;">${esc(v.DISCLAIMER).replace(/\n/g, '<br />')}</div>`
+    : '';
+
+  const rightCellStyle = v.SHOW_BAR
+    ? 'vertical-align:top;border-left:3px solid #39B54A;padding:0 0 0 18px;'
+    : 'vertical-align:top;padding:0;';
 
   return `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="font-family:Arial,Helvetica,sans-serif;color:#111111;font-size:14px;line-height:1.45;border-collapse:collapse;">
   <tr>
     ${photoCell}
-    <td style="vertical-align:top;border-left:3px solid #39B54A;padding:0 0 0 18px;">
-      <div style="font-size:18px;font-weight:700;color:#0D004C;letter-spacing:0.2px;line-height:1.2;">${fullName}</div>
-      <div style="font-size:13px;color:#4A4A4A;margin:2px 0 10px 0;">${title} &middot; SMAART Company</div>
-      ${contactRow}
-      <div style="font-size:13px;margin-top:2px;">
-        <a href="https://smaartcompany.com" style="color:#0D004C;text-decoration:none;font-weight:600;">smaartcompany.com</a>
-      </div>
-      <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-top:12px;border-collapse:collapse;">
-        <tr>
-          <td style="padding:0 14px 0 0;vertical-align:middle;"><a href="https://smaartcompany.com"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png" alt="SMAART Company" height="28" style="display:block;height:28px;border:0;" /></a></td>
-          <td style="padding:0 6px;vertical-align:middle;"><a href="${v.LINKEDIN_URL}"><img src="${v.ASSET_BASE}/social-icons/linkedin.png" alt="LinkedIn" width="22" height="22" style="display:block;width:22px;height:22px;border:0;" /></a></td>
-          <td style="padding:0 6px;vertical-align:middle;"><a href="${v.FACEBOOK_URL}"><img src="${v.ASSET_BASE}/social-icons/facebook.png" alt="Facebook" width="22" height="22" style="display:block;width:22px;height:22px;border:0;" /></a></td>
-          <td style="padding:0 6px;vertical-align:middle;"><a href="${v.INSTAGRAM_URL}"><img src="${v.ASSET_BASE}/social-icons/instagram.png" alt="Instagram" width="22" height="22" style="display:block;width:22px;height:22px;border:0;" /></a></td>
-          <td style="padding:0 6px;vertical-align:middle;"><a href="${v.X_URL}"><img src="${v.ASSET_BASE}/social-icons/x.png" alt="X" width="22" height="22" style="display:block;width:22px;height:22px;border:0;" /></a></td>
-          <td style="padding:0 0 0 6px;vertical-align:middle;"><a href="${v.YOUTUBE_URL}"><img src="${v.ASSET_BASE}/social-icons/youtube.png" alt="YouTube" width="22" height="22" style="display:block;width:22px;height:22px;border:0;" /></a></td>
-        </tr>
-      </table>
-      <div style="font-size:11px;color:#8A8A8A;margin-top:10px;line-height:1.4;">This message is confidential. If you received it in error, please notify the sender and delete.</div>
+    <td style="${rightCellStyle}">
+      <div style="font-size:18px;font-weight:700;color:#0D004C;letter-spacing:0.2px;line-height:1.2;">${esc(fullName)}</div>
+      ${titleBlock}
+      ${contactBlock}
+      ${websiteBlock}
+      ${addressBlock}
+      ${iconRow}
+      ${disclaimerBlock}
     </td>
   </tr>
 </table>`;
@@ -188,7 +279,8 @@ function update() {
   $('photoSizeVal').textContent = $('photoSize').value;
   $('preview').innerHTML = render({ forPreview: true });
 }
-document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', update));
+document.querySelectorAll('input, select, textarea').forEach(el => el.addEventListener('input', update));
+document.querySelectorAll('input[type="checkbox"]').forEach(el => el.addEventListener('change', update));
 update();
 
 $('copyBtn').addEventListener('click', async () => {
