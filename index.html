@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SMAART Gmail Signature Generator</title>
+<style>
+  :root {
+    --navy: #0D004C;
+    --green: #39B54A;
+    --teal: #006E7F;
+    --gold: #F7941D;
+    --ink: #111;
+    --muted: #6B7280;
+    --line: #E5E7EB;
+    --bg: #F8FAFC;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; color: var(--ink); background: var(--bg); }
+  header { background: var(--navy); color: #fff; padding: 20px 28px; }
+  header h1 { margin: 0; font-size: 20px; letter-spacing: 0.2px; }
+  header p { margin: 4px 0 0; opacity: 0.75; font-size: 13px; }
+  main { max-width: 1100px; margin: 0 auto; padding: 28px; display: grid; grid-template-columns: 360px 1fr; gap: 28px; }
+  @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
+  .panel { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 22px; }
+  .panel h2 { margin: 0 0 16px; font-size: 15px; font-weight: 700; color: var(--navy); letter-spacing: 0.2px; }
+  label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin: 12px 0 6px; text-transform: uppercase; letter-spacing: 0.4px; }
+  input, select { width: 100%; padding: 9px 11px; border: 1px solid var(--line); border-radius: 6px; font-size: 14px; font-family: inherit; outline: none; }
+  input:focus, select:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(13,0,76,0.08); }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .actions { margin-top: 20px; display: flex; gap: 10px; }
+  button { background: var(--navy); color: #fff; border: 0; padding: 11px 16px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
+  button.secondary { background: #fff; color: var(--navy); border: 1px solid var(--navy); }
+  button:hover { opacity: 0.92; }
+  .preview-wrap { padding: 28px; background: #fff; border: 1px dashed var(--line); border-radius: 10px; }
+  .preview-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); margin-bottom: 12px; }
+  .note { font-size: 12px; color: var(--muted); margin-top: 14px; line-height: 1.5; }
+  .note code { background: #F1F5F9; padding: 1px 5px; border-radius: 3px; font-size: 11px; }
+  .pill { display: inline-block; background: var(--green); color: #fff; font-size: 10px; padding: 2px 7px; border-radius: 999px; letter-spacing: 0.4px; margin-left: 6px; vertical-align: middle; text-transform: uppercase; }
+</style>
+</head>
+<body>
+<header>
+  <h1>SMAART Gmail Signature Generator <span class="pill">beta</span></h1>
+  <p>Fill in your details, copy the rendered HTML, paste into Gmail → Settings → Signature.</p>
+</header>
+<main>
+  <section class="panel">
+    <h2>Your details</h2>
+    <label for="photoSlug">Photo</label>
+    <select id="photoSlug">
+      <option value="">— none —</option>
+      <option value="albert-amarente">Albert Amarente</option>
+      <option value="alex">Alex</option>
+      <option value="anthony">Anthony</option>
+      <option value="gus">Gus</option>
+      <option value="lisa">Lisa</option>
+      <option value="lorri-hill">Lorri Hill</option>
+      <option value="ray">Ray</option>
+      <option value="roxana-umana">Roxana Umana</option>
+    </select>
+    <label for="fullName">Full name</label>
+    <input id="fullName" value="Daniel Corcega" />
+    <label for="title">Title</label>
+    <input id="title" value="Marketing Director" />
+    <div class="row">
+      <div>
+        <label for="email">Email</label>
+        <input id="email" value="daniel@smaartcompany.com" />
+      </div>
+      <div>
+        <label for="phone">Phone (display)</label>
+        <input id="phone" value="+1 (305) 000-0000" />
+      </div>
+    </div>
+    <label for="phoneE164">Phone (tel: link, E.164)</label>
+    <input id="phoneE164" value="+13050000000" />
+
+    <h2 style="margin-top:22px;">Social links</h2>
+    <label for="linkedin">LinkedIn</label>
+    <input id="linkedin" value="https://www.linkedin.com/company/smaartcompany" />
+    <label for="facebook">Facebook</label>
+    <input id="facebook" value="https://www.facebook.com/smaartcompany" />
+    <label for="instagram">Instagram</label>
+    <input id="instagram" value="https://www.instagram.com/smaartcompany" />
+    <label for="xurl">X</label>
+    <input id="xurl" value="https://x.com/smaartcompany" />
+    <label for="youtube">YouTube</label>
+    <input id="youtube" value="https://www.youtube.com/@smaartcompany" />
+
+    <label for="assetBase">Asset base URL</label>
+    <input id="assetBase" value="https://cdn.jsdelivr.net/gh/SMAART-Company/smaart-gmail-signatures@main" />
+
+    <div class="actions">
+      <button id="copyBtn">Copy HTML</button>
+      <button class="secondary" id="downloadBtn">Download .html</button>
+    </div>
+    <div class="note">
+      Asset URLs use <code>cdn.jsdelivr.net</code>, which serves public GitHub repos globally. <strong>If this repo is private, images will not render in recipients' inboxes</strong> — either make the repo public or host assets on a public domain (e.g. <code>https://smaartcompany.com/signatures/</code>).
+    </div>
+  </section>
+
+  <section>
+    <div class="preview-label">Live preview — this is what recipients will see</div>
+    <div class="preview-wrap" id="preview"></div>
+    <div class="note">Paste location: Gmail web → ⚙ → <em>See all settings</em> → <em>Signature</em> → <em>Create new</em> → paste. Set as default for new/reply messages.</div>
+  </section>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+
+function render() {
+  const v = {
+    ASSET_BASE: $('assetBase').value.replace(/\/+$/, ''),
+    PHOTO_SLUG: $('photoSlug').value,
+    FULL_NAME: $('fullName').value,
+    TITLE: $('title').value,
+    EMAIL: $('email').value,
+    PHONE_DISPLAY: $('phone').value,
+    PHONE_E164: $('phoneE164').value,
+    LINKEDIN_URL: $('linkedin').value,
+    FACEBOOK_URL: $('facebook').value,
+    INSTAGRAM_URL: $('instagram').value,
+    X_URL: $('xurl').value,
+    YOUTUBE_URL: $('youtube').value,
+  };
+
+  const photoCell = v.PHOTO_SLUG
+    ? `<td style="padding:0 20px 0 0;vertical-align:top;"><img src="${v.ASSET_BASE}/team-images/${v.PHOTO_SLUG}.jpg" width="96" height="96" alt="${v.FULL_NAME}" style="display:block;width:96px;height:96px;border-radius:96px;border:2px solid #0D004C;" /></td>`
+    : '';
+
+  return `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="font-family:Arial,Helvetica,sans-serif;color:#111111;font-size:14px;line-height:1.45;border-collapse:collapse;">
+  <tr>
+    ${photoCell}
+    <td style="vertical-align:top;border-left:3px solid #39B54A;padding:0 0 0 18px;">
+      <div style="font-size:18px;font-weight:700;color:#0D004C;letter-spacing:0.2px;line-height:1.2;">${v.FULL_NAME}</div>
+      <div style="font-size:13px;color:#4A4A4A;margin:2px 0 10px 0;">${v.TITLE} &middot; SMAART Company</div>
+      <div style="font-size:13px;color:#111111;">
+        <a href="mailto:${v.EMAIL}" style="color:#0D004C;text-decoration:none;">${v.EMAIL}</a>
+        &nbsp;&middot;&nbsp;
+        <a href="tel:${v.PHONE_E164}" style="color:#0D004C;text-decoration:none;">${v.PHONE_DISPLAY}</a>
+      </div>
+      <div style="font-size:13px;margin-top:2px;">
+        <a href="https://smaartcompany.com" style="color:#0D004C;text-decoration:none;font-weight:600;">smaartcompany.com</a>
+      </div>
+      <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-top:12px;border-collapse:collapse;">
+        <tr>
+          <td style="padding:0 14px 0 0;vertical-align:middle;"><a href="https://smaartcompany.com"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png" alt="SMAART Company" height="28" style="display:block;height:28px;border:0;" /></a></td>
+          <td style="padding:0 6px;vertical-align:middle;"><a href="${v.LINKEDIN_URL}"><img src="${v.ASSET_BASE}/social-icons/linkedin.png" alt="LinkedIn" width="22" height="22" style="display:block;width:22px;height:22px;border:0;" /></a></td>
+          <td style="padding:0 6px;vertical-align:middle;"><a href="${v.FACEBOOK_URL}"><img src="${v.ASSET_BASE}/social-icons/facebook.png" alt="Facebook" width="22" height="22" style="display:block;width:22px;height:22px;border:0;" /></a></td>
+          <td style="padding:0 6px;vertical-align:middle;"><a href="${v.INSTAGRAM_URL}"><img src="${v.ASSET_BASE}/social-icons/instagram.png" alt="Instagram" width="22" height="22" style="display:block;width:22px;height:22px;border:0;" /></a></td>
+          <td style="padding:0 6px;vertical-align:middle;"><a href="${v.X_URL}"><img src="${v.ASSET_BASE}/social-icons/x.png" alt="X" width="22" height="22" style="display:block;width:22px;height:22px;border:0;" /></a></td>
+          <td style="padding:0 0 0 6px;vertical-align:middle;"><a href="${v.YOUTUBE_URL}"><img src="${v.ASSET_BASE}/social-icons/youtube.png" alt="YouTube" width="22" height="22" style="display:block;width:22px;height:22px;border:0;" /></a></td>
+        </tr>
+      </table>
+      <div style="font-size:11px;color:#8A8A8A;margin-top:10px;line-height:1.4;">This message is confidential. If you received it in error, please notify the sender and delete.</div>
+    </td>
+  </tr>
+</table>`;
+}
+
+function update() { $('preview').innerHTML = render(); }
+document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', update));
+update();
+
+$('copyBtn').addEventListener('click', async () => {
+  const html = render();
+  try {
+    await navigator.clipboard.write([
+      new ClipboardItem({
+        'text/html': new Blob([html], { type: 'text/html' }),
+        'text/plain': new Blob([html], { type: 'text/plain' }),
+      })
+    ]);
+    $('copyBtn').textContent = 'Copied! Paste into Gmail';
+    setTimeout(() => $('copyBtn').textContent = 'Copy HTML', 2200);
+  } catch (err) {
+    await navigator.clipboard.writeText(html);
+    $('copyBtn').textContent = 'Copied HTML source';
+    setTimeout(() => $('copyBtn').textContent = 'Copy HTML', 2200);
+  }
+});
+
+$('downloadBtn').addEventListener('click', () => {
+  const slug = ($('fullName').value || 'signature').toLowerCase().replace(/\s+/g, '-');
+  const blob = new Blob([render()], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `${slug}.html`; a.click();
+  URL.revokeObjectURL(url);
+});
+</script>
+</body>
+</html>

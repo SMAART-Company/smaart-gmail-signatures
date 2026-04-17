@@ -1,0 +1,62 @@
+<!--
+  SMAART Company — Gmail signature template.
+
+  How to use:
+    1. Replace every {{TOKEN}} below with the real value.
+    2. Open this file in a browser, select ALL (Cmd+A), copy.
+    3. Gmail → Settings → See all settings → Signature → paste.
+
+  Asset URLs use jsDelivr, which serves public GitHub repos worldwide over HTTPS.
+  If the repo stays private, swap {{ASSET_BASE}} for a public CDN or the SMAART website.
+
+  Do not edit CSS outside inline styles — Gmail strips <style> blocks.
+-->
+<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="font-family:Arial,Helvetica,sans-serif;color:#111111;font-size:14px;line-height:1.45;border-collapse:collapse;">
+  <tr>
+    <!-- Left: headshot -->
+    <td style="padding:0 20px 0 0;vertical-align:top;">
+      <img src="{{ASSET_BASE}}/team-images/{{PHOTO_SLUG}}.jpg" width="96" height="96" alt="{{FULL_NAME}}" style="display:block;width:96px;height:96px;border-radius:96px;border:2px solid #0D004C;" />
+    </td>
+
+    <!-- Right: identity + brand bar + contact + social -->
+    <td style="vertical-align:top;border-left:3px solid #39B54A;padding:0 0 0 18px;">
+      <div style="font-size:18px;font-weight:700;color:#0D004C;letter-spacing:0.2px;line-height:1.2;">{{FULL_NAME}}</div>
+      <div style="font-size:13px;color:#4A4A4A;margin:2px 0 10px 0;">{{TITLE}} &middot; SMAART Company</div>
+
+      <div style="font-size:13px;color:#111111;">
+        <a href="mailto:{{EMAIL}}" style="color:#0D004C;text-decoration:none;">{{EMAIL}}</a>
+        &nbsp;&middot;&nbsp;
+        <a href="tel:{{PHONE_E164}}" style="color:#0D004C;text-decoration:none;">{{PHONE_DISPLAY}}</a>
+      </div>
+      <div style="font-size:13px;margin-top:2px;">
+        <a href="https://smaartcompany.com" style="color:#0D004C;text-decoration:none;font-weight:600;">smaartcompany.com</a>
+      </div>
+
+      <!-- Logo + social icons -->
+      <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-top:12px;border-collapse:collapse;">
+        <tr>
+          <td style="padding:0 14px 0 0;vertical-align:middle;">
+            <a href="https://smaartcompany.com"><img src="{{ASSET_BASE}}/logos/smaart-white-and-navy.png" alt="SMAART Company" height="28" style="display:block;height:28px;border:0;" /></a>
+          </td>
+          <td style="padding:0 6px;vertical-align:middle;">
+            <a href="{{LINKEDIN_URL}}"><img src="{{ASSET_BASE}}/social-icons/linkedin.png" alt="LinkedIn" width="22" height="22" style="display:block;width:22px;height:22px;border:0;" /></a>
+          </td>
+          <td style="padding:0 6px;vertical-align:middle;">
+            <a href="{{FACEBOOK_URL}}"><img src="{{ASSET_BASE}}/social-icons/facebook.png" alt="Facebook" width="22" height="22" style="display:block;width:22px;height:22px;border:0;" /></a>
+          </td>
+          <td style="padding:0 6px;vertical-align:middle;">
+            <a href="{{INSTAGRAM_URL}}"><img src="{{ASSET_BASE}}/social-icons/instagram.png" alt="Instagram" width="22" height="22" style="display:block;width:22px;height:22px;border:0;" /></a>
+          </td>
+          <td style="padding:0 6px;vertical-align:middle;">
+            <a href="{{X_URL}}"><img src="{{ASSET_BASE}}/social-icons/x.png" alt="X" width="22" height="22" style="display:block;width:22px;height:22px;border:0;" /></a>
+          </td>
+          <td style="padding:0 0 0 6px;vertical-align:middle;">
+            <a href="{{YOUTUBE_URL}}"><img src="{{ASSET_BASE}}/social-icons/youtube.png" alt="YouTube" width="22" height="22" style="display:block;width:22px;height:22px;border:0;" /></a>
+          </td>
+        </tr>
+      </table>
+
+      <div style="font-size:11px;color:#8A8A8A;margin-top:10px;line-height:1.4;">This message is confidential. If you received it in error, please notify the sender and delete.</div>
+    </td>
+  </tr>
+</table>
