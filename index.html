@@ -49,11 +49,11 @@
     <h2>Your details</h2>
     <label for="photoSlug">Photo</label>
     <select id="photoSlug">
-      <option value="">— none —</option>
+      <option value="" selected>— none —</option>
       <option value="albert-amarente">Albert Amarente</option>
       <option value="alex">Alex</option>
       <option value="anthony">Anthony</option>
-      <option value="daniel-corcega" selected>Daniel Corcega</option>
+      <option value="daniel-corcega">Daniel Corcega</option>
       <option value="gus">Gus</option>
       <option value="lisa">Lisa</option>
       <option value="lorri-hill">Lorri Hill</option>
@@ -61,21 +61,21 @@
       <option value="roxana-umana">Roxana Umana</option>
     </select>
     <label for="fullName">Full name</label>
-    <input id="fullName" value="Daniel Corcega" />
+    <input id="fullName" placeholder="Jane Doe" value="" />
     <label for="title">Title</label>
-    <input id="title" value="Marketing Director" />
+    <input id="title" placeholder="Account Executive" value="" />
     <div class="row">
       <div>
         <label for="email">Email</label>
-        <input id="email" value="daniel@smaartcompany.com" />
+        <input id="email" placeholder="jane@smaartcompany.com" value="" />
       </div>
       <div>
-        <label for="phone">Phone (display)</label>
-        <input id="phone" value="+1 (305) 000-0000" />
+        <label for="phone">Phone (display, optional)</label>
+        <input id="phone" placeholder="+1 (305) 123-4567" value="" />
       </div>
     </div>
-    <label for="phoneE164">Phone (tel: link, E.164)</label>
-    <input id="phoneE164" value="+13050000000" />
+    <label for="phoneE164">Phone (tel: link, E.164, optional)</label>
+    <input id="phoneE164" placeholder="+13051234567" value="" />
 
     <h2 style="margin-top:22px;">Social links</h2>
     <label for="linkedin">LinkedIn</label>
@@ -127,21 +127,33 @@ function render() {
     YOUTUBE_URL: $('youtube').value,
   };
 
+  const fullName = v.FULL_NAME || 'Your Name';
+  const title = v.TITLE || 'Your Title';
+
   const photoCell = v.PHOTO_SLUG
-    ? `<td style="padding:0 20px 0 0;vertical-align:top;"><img src="${v.ASSET_BASE}/team-images/${v.PHOTO_SLUG}.jpg" width="96" height="96" alt="${v.FULL_NAME}" style="display:block;width:96px;height:96px;border-radius:96px;border:2px solid #0D004C;" /></td>`
+    ? `<td style="padding:0 20px 0 0;vertical-align:top;"><img src="${v.ASSET_BASE}/team-images/${v.PHOTO_SLUG}.jpg" width="96" height="96" alt="${fullName}" style="display:block;width:96px;height:96px;border-radius:96px;border:2px solid #0D004C;" /></td>`
+    : '';
+
+  const emailPart = v.EMAIL
+    ? `<a href="mailto:${v.EMAIL}" style="color:#0D004C;text-decoration:none;">${v.EMAIL}</a>`
+    : '';
+  const phonePart = v.PHONE_DISPLAY
+    ? `<a href="tel:${v.PHONE_E164 || v.PHONE_DISPLAY.replace(/[^+\d]/g,'')}" style="color:#0D004C;text-decoration:none;">${v.PHONE_DISPLAY}</a>`
+    : '';
+  const contactLine = (emailPart && phonePart)
+    ? `${emailPart}&nbsp;&middot;&nbsp;${phonePart}`
+    : (emailPart || phonePart);
+  const contactRow = contactLine
+    ? `<div style="font-size:13px;color:#111111;">${contactLine}</div>`
     : '';
 
   return `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="font-family:Arial,Helvetica,sans-serif;color:#111111;font-size:14px;line-height:1.45;border-collapse:collapse;">
   <tr>
     ${photoCell}
     <td style="vertical-align:top;border-left:3px solid #39B54A;padding:0 0 0 18px;">
-      <div style="font-size:18px;font-weight:700;color:#0D004C;letter-spacing:0.2px;line-height:1.2;">${v.FULL_NAME}</div>
-      <div style="font-size:13px;color:#4A4A4A;margin:2px 0 10px 0;">${v.TITLE} &middot; SMAART Company</div>
-      <div style="font-size:13px;color:#111111;">
-        <a href="mailto:${v.EMAIL}" style="color:#0D004C;text-decoration:none;">${v.EMAIL}</a>
-        &nbsp;&middot;&nbsp;
-        <a href="tel:${v.PHONE_E164}" style="color:#0D004C;text-decoration:none;">${v.PHONE_DISPLAY}</a>
-      </div>
+      <div style="font-size:18px;font-weight:700;color:#0D004C;letter-spacing:0.2px;line-height:1.2;">${fullName}</div>
+      <div style="font-size:13px;color:#4A4A4A;margin:2px 0 10px 0;">${title} &middot; SMAART Company</div>
+      ${contactRow}
       <div style="font-size:13px;margin-top:2px;">
         <a href="https://smaartcompany.com" style="color:#0D004C;text-decoration:none;font-weight:600;">smaartcompany.com</a>
       </div>
