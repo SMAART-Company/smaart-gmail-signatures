@@ -60,6 +60,8 @@
       <option value="ray">Ray</option>
       <option value="roxana-umana">Roxana Umana</option>
     </select>
+    <label for="photoSize">Photo size — <span id="photoSizeVal">96</span>px</label>
+    <input id="photoSize" type="range" min="48" max="160" step="4" value="96" />
     <label for="fullName">Full name</label>
     <input id="fullName" placeholder="Jane Doe" value="" />
     <label for="title">Title</label>
@@ -111,10 +113,19 @@
 <script>
 const $ = (id) => document.getElementById(id);
 
-function render() {
+// When running from localhost, the preview needs to load assets from the
+// local server (unpushed photos won't be on jsDelivr yet). But the copied
+// HTML must always use the public URL the user typed, not localhost —
+// recipients' inboxes can't reach your laptop.
+const IS_LOCAL = ['localhost', '127.0.0.1', '0.0.0.0'].includes(location.hostname);
+
+function render({ forPreview = false } = {}) {
+  const typedBase = $('assetBase').value.replace(/\/+$/, '');
+  const effectiveBase = (forPreview && IS_LOCAL) ? location.origin : typedBase;
   const v = {
-    ASSET_BASE: $('assetBase').value.replace(/\/+$/, ''),
+    ASSET_BASE: effectiveBase,
     PHOTO_SLUG: $('photoSlug').value,
+    PHOTO_SIZE: parseInt($('photoSize').value, 10) || 96,
     FULL_NAME: $('fullName').value,
     TITLE: $('title').value,
     EMAIL: $('email').value,
@@ -131,7 +142,7 @@ function render() {
   const title = v.TITLE || 'Your Title';
 
   const photoCell = v.PHOTO_SLUG
-    ? `<td style="padding:0 20px 0 0;vertical-align:top;"><img src="${v.ASSET_BASE}/team-images/${v.PHOTO_SLUG}.jpg" width="96" height="96" alt="${fullName}" style="display:block;width:96px;height:96px;border-radius:96px;border:2px solid #0D004C;" /></td>`
+    ? `<td style="padding:0 20px 0 0;vertical-align:top;"><img src="${v.ASSET_BASE}/team-images/${v.PHOTO_SLUG}.jpg" width="${v.PHOTO_SIZE}" height="${v.PHOTO_SIZE}" alt="${fullName}" style="display:block;width:${v.PHOTO_SIZE}px;height:${v.PHOTO_SIZE}px;border-radius:${v.PHOTO_SIZE}px;" /></td>`
     : '';
 
   const emailPart = v.EMAIL
@@ -173,7 +184,10 @@ function render() {
 </table>`;
 }
 
-function update() { $('preview').innerHTML = render(); }
+function update() {
+  $('photoSizeVal').textContent = $('photoSize').value;
+  $('preview').innerHTML = render({ forPreview: true });
+}
 document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', update));
 update();
 
