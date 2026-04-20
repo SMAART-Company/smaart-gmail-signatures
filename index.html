@@ -36,7 +36,28 @@
   button { background: var(--navy); color: #fff; border: 0; padding: 11px 16px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
   button.secondary { background: #fff; color: var(--navy); border: 1px solid var(--navy); }
   button:hover { opacity: 0.92; }
-  .preview-wrap { padding: 28px; background: #fff; border: 1px dashed var(--line); border-radius: 10px; }
+  .preview-wrap { padding: 8px; background: transparent; border: 0; border-radius: 10px; display: flex; flex-direction: column; gap: 14px; }
+  .variant-card { background: #fff; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; transition: box-shadow .15s, border-color .15s; }
+  .variant-card.active { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(13,0,76,0.12); }
+  .variant-head { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #F8FAFC; border-bottom: 1px solid var(--line); font-size: 12px; }
+  .variant-name { font-weight: 700; color: var(--navy); letter-spacing: 0.2px; }
+  .variant-hint { color: var(--muted); }
+  .variant-badge { margin-left: auto; background: var(--green); color: #fff; font-size: 10px; padding: 3px 8px; border-radius: 999px; letter-spacing: 0.4px; text-transform: uppercase; font-weight: 700; }
+  .variant-pick { margin-left: auto; background: #fff; color: var(--navy); border: 1px solid var(--navy); padding: 4px 10px; font-size: 11px; font-weight: 600; border-radius: 6px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.4px; }
+  .variant-pick:hover { background: var(--navy); color: #fff; }
+  .variant-delete { background: transparent; color: #8A8A8A; border: 1px solid var(--line); padding: 3px 8px; font-size: 14px; line-height: 1; border-radius: 6px; cursor: pointer; margin-left: 8px; font-family: inherit; }
+  .variant-delete:hover { background: #FEF2F2; color: #B91C1C; border-color: #FCA5A5; }
+  .variant-restore { display: block; width: 100%; background: transparent; color: var(--muted); border: 1px dashed var(--line); padding: 8px; font-size: 11px; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 600; font-family: inherit; }
+  .variant-restore:hover { color: var(--navy); border-color: var(--navy); }
+  .subtitle-row { display: flex; align-items: center; gap: 6px; margin: 6px 0; }
+  .subtitle-row input[type="checkbox"] { flex: 0 0 auto; margin-right: 2px; }
+  .subtitle-row input.sub-text { flex: 1 1 auto; min-width: 0; padding: 6px 9px; }
+  .subtitle-row input.sub-url { flex: 0 0 140px; font-size: 11px; padding: 6px 9px; color: var(--muted); }
+  .subtitle-row button.sub-delete { flex: 0 0 auto; background: transparent; border: 1px solid var(--line); color: #8A8A8A; width: 28px; height: 32px; border-radius: 6px; cursor: pointer; padding: 0; font-size: 16px; line-height: 1; font-family: inherit; }
+  .subtitle-row button.sub-delete:hover { background: #FEF2F2; color: #B91C1C; border-color: #FCA5A5; }
+  .subtitle-add { margin-top: 6px; background: transparent; color: var(--navy); border: 1px dashed var(--navy); padding: 7px 12px; font-size: 11px; font-weight: 600; border-radius: 6px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.4px; font-family: inherit; width: 100%; }
+  .subtitle-add:hover { background: var(--navy); color: #fff; }
+  .variant-body { padding: 20px; }
   .preview-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); margin-bottom: 12px; }
   .note { font-size: 12px; color: var(--muted); margin-top: 14px; line-height: 1.5; }
   .note code { background: #F1F5F9; padding: 1px 5px; border-radius: 3px; font-size: 11px; }
@@ -51,26 +72,63 @@
 <main>
   <section class="panel">
     <h2>Your details</h2>
+    <label for="layout">Signature layout</label>
+    <select id="layout">
+      <option value="classic" selected>Classic — photo, info, logo right-corner</option>
+      <option value="branded">Branded header — small logo above name</option>
+      <option value="designer">Designer card — large photo, cursive name, right sidebar</option>
+      <option value="triptych">Triptych — three sections: identity · contact · branding</option>
+      <option value="banner">Banner — two-row card with navy bottom bar</option>
+      <option value="minimal">Minimal — photo + info only (no logo/socials/address)</option>
+      <option value="text-only">Text-only — zero images, can never break</option>
+    </select>
     <label for="photoSlug">Photo</label>
     <select id="photoSlug">
       <option value="" selected>— none —</option>
       <option value="albert-amarente">Albert Amarente</option>
       <option value="alex">Alex</option>
       <option value="anthony">Anthony</option>
-      <option value="daniel">Daniel Corcega</option>
+      <option value="daniel">Daniel Corcega (black bg)</option>
+      <option value="daniel-white">Daniel Corcega (white bg)</option>
       <option value="daniel-corcega">Daniel Corcega (legacy path)</option>
       <option value="gus">Gus</option>
       <option value="lisa">Lisa</option>
       <option value="lorri-hill">Lorri Hill</option>
-      <option value="ray">Ray</option>
+      <option value="ray">Ray Dominguez</option>
       <option value="roxana-umana">Roxana Umana</option>
     </select>
     <label for="photoSize">Photo size — <span id="photoSizeVal">96</span>px</label>
-    <input id="photoSize" type="range" min="48" max="160" step="4" value="96" />
+    <input id="photoSize" type="range" min="48" max="200" step="4" value="96" />
+    <label for="photoShape">Photo shape</label>
+    <select id="photoShape">
+      <option value="round" selected>Round (circle)</option>
+      <option value="squared">Squared (rounded corners)</option>
+    </select>
+    <label for="photoFocus">Photo vertical focus — <span id="photoFocusVal">25</span>% <span class="hint">0 = top of source · 50 = center · 100 = bottom. Lower values bring the face up.</span></label>
+    <input id="photoFocus" type="range" min="0" max="100" step="5" value="25" />
     <label for="fullName">Full name</label>
     <input id="fullName" placeholder="Jane Doe" value="" />
-    <label for="title">Title(s) <span class="hint">one per line — e.g. "CMO" then "Lead Gen Director"</span></label>
+    <label for="savedContact">Saved contacts <span class="hint">auto-fills Full name + Email. Type a name above and click <strong>+ Save</strong> to remember it.</span></label>
+    <div style="display:flex;gap:6px;align-items:center;">
+      <select id="savedContact" style="flex:1 1 auto;min-width:0;"><option value="">— pick a saved contact —</option></select>
+      <button type="button" id="saveContact" style="flex:0 0 auto;background:transparent;color:var(--navy);border:1px dashed var(--navy);padding:7px 12px;font-size:11px;font-weight:600;border-radius:6px;cursor:pointer;text-transform:uppercase;letter-spacing:0.4px;font-family:inherit;white-space:nowrap;">+ Save</button>
+      <button type="button" id="deleteContact" title="Delete the selected contact" style="flex:0 0 auto;background:transparent;border:1px solid var(--line);color:#8A8A8A;width:32px;height:32px;border-radius:6px;cursor:pointer;padding:0;font-size:16px;line-height:1;font-family:inherit;">&times;</button>
+    </div>
+    <label for="title">Title(s) <span class="hint">one per line. Add a link with markdown: <code>[Title](https://url)</code></span></label>
     <textarea id="title" rows="2" placeholder="Account Executive"></textarea>
+    <label>Subtitle list <span class="hint">toggle pills on/off, click × to remove, + to add. Optional link on each row.</span></label>
+    <div id="subtitleList"></div>
+    <button type="button" class="subtitle-add" id="subtitleAdd">+ Add subtitle</button>
+
+    <label for="titleStyle">Title display style</label>
+    <select id="titleStyle">
+      <option value="primary-tabs" selected>Primary + tabs — first as subtitle, rest as small discrete pills (best for multi-title)</option>
+      <option value="tabs">Tabs — every title as an equal-weight pill</option>
+      <option value="stacked">Stacked — one per line (good for 1–3 titles)</option>
+      <option value="inline">Inline — middot-separated (good for 2–5 titles)</option>
+      <option value="columns">Two columns — grid (good for 6+ titles)</option>
+      <option value="primary">Primary + list — first bold, rest as a muted comma list</option>
+    </select>
     <label class="toggle"><input type="checkbox" id="showCompany" checked />Show "· SMAART Company" beside first title line</label>
 
     <div class="row">
@@ -80,20 +138,29 @@
       </div>
       <div>
         <label for="phone">Phone (display, optional)</label>
-        <input id="phone" placeholder="+1 (305) 123-4567" value="" />
+        <input id="phone" placeholder="+1 (305) 123-4567" value="+1 (305) 819-3675" />
       </div>
     </div>
     <label for="phoneE164">Phone (tel: link, E.164, optional)</label>
-    <input id="phoneE164" placeholder="+13051234567" value="" />
+    <input id="phoneE164" placeholder="+13051234567" value="+13058193675" />
     <label class="toggle"><input type="checkbox" id="showLabels" />Prefix contact lines with "T:" / "E:" and stack vertically</label>
 
     <label for="websiteText">Website display text <span class="hint">optional — leave empty for "smaartcompany.com"</span></label>
-    <input id="websiteText" placeholder="www.SMAARTCompany.com" value="" />
+    <input id="websiteText" placeholder="www.SMAARTCompany.com" value="www.smaartcompany.com" />
     <label for="websiteUrl">Website URL</label>
     <input id="websiteUrl" value="https://smaartcompany.com" />
 
     <label for="address">Address <span class="hint">optional — one line per address line</span></label>
-    <textarea id="address" rows="2" placeholder="2319 N Andrews Avenue&#10;Fort Lauderdale, FL 33311"></textarea>
+    <textarea id="address" rows="2" placeholder="2319 N Andrews Avenue&#10;Fort Lauderdale, FL 33311">2319 N. Andres Avenue
+Fort Lauderdale, FL 33311</textarea>
+
+    <label for="bookSlug">Accent image <span class="hint">optional — book cover or award, shows right of signature in Classic / Designer</span></label>
+    <select id="bookSlug">
+      <option value="" selected>— none —</option>
+      <option value="ray-young-business">Ray Dominguez — "Young Business"</option>
+    </select>
+    <label for="bookUrl">Accent image link <span class="hint">optional — where the cover clicks through to</span></label>
+    <input id="bookUrl" value="" placeholder="https://www.amazon.com/..." />
 
     <h2 style="margin-top:22px;">Social links</h2>
     <label for="linkedin">LinkedIn</label>
@@ -110,9 +177,17 @@
     <h2 style="margin-top:22px;">Card elements <span class="hint">toggle blocks on/off</span></h2>
     <label class="toggle"><input type="checkbox" id="showLogo" checked />Show SMAART logo</label>
     <label class="toggle"><input type="checkbox" id="showSocial" checked />Show social icons</label>
-    <label class="toggle"><input type="checkbox" id="showBar" checked />Show green vertical separator bar</label>
+    <label class="toggle"><input type="checkbox" id="showBar" checked />Show vertical separator bar</label>
+    <label for="barColor">Separator bar color</label>
+    <select id="barColor">
+      <option value="green" selected>SMAART Green (#39B54A)</option>
+      <option value="navy">SMAART Navy (#0D004C)</option>
+    </select>
     <label class="toggle"><input type="checkbox" id="showWebsite" checked />Show website line</label>
-    <label for="disclaimer">Disclaimer <span class="hint">leave empty to hide</span></label>
+    <label class="toggle"><input type="checkbox" id="cardMode" />Card mode <span class="hint">wrap signature in a rounded, shadowed floating card</span></label>
+    <label class="toggle"><input type="checkbox" id="showDisclaimer" checked />Show confidentiality disclaimer <span class="hint">rendered in a soft gray box below the signature</span></label>
+    <label class="toggle"><input type="checkbox" id="disclaimerOutside" />Place disclaimer outside the card <span class="hint">when Card mode is on — sits below the card instead of inside it</span></label>
+    <label for="disclaimer">Disclaimer text</label>
     <textarea id="disclaimer" rows="3">This message is confidential. If you received it in error, please notify the sender and delete.</textarea>
 
     <h2 style="margin-top:22px;">Advanced</h2>
@@ -120,6 +195,7 @@
     <input id="assetBase" value="https://cdn.jsdelivr.net/gh/SMAART-Company/smaart-gmail-signatures@main" />
     <label for="cacheVer">Image cache version <span class="hint">bump when a photo/logo changes — forces Gmail image proxy to refetch</span></label>
     <input id="cacheVer" value="3" />
+    <label class="toggle" style="margin-top:12px;"><input type="checkbox" id="embedPhoto" checked />Embed photo as base64 <span class="hint">bulletproof — photo lives inside the signature HTML, can't break. Resized client-side at copy time.</span></label>
 
     <div class="actions">
       <button id="copyBtn">Copy HTML</button>
@@ -146,7 +222,8 @@ const $ = (id) => document.getElementById(id);
 // recipients' inboxes can't reach your laptop.
 const IS_LOCAL = ['localhost', '127.0.0.1', '0.0.0.0'].includes(location.hostname);
 
-function render({ forPreview = false } = {}) {
+function render(opts = {}) {
+  const { forPreview = false } = opts;
   const typedBase = $('assetBase').value.replace(/\/+$/, '');
   const effectiveBase = (forPreview && IS_LOCAL) ? location.origin : typedBase;
   // Cache-buster for Gmail's image proxy (ci3.googleusercontent.com). The
@@ -159,6 +236,8 @@ function render({ forPreview = false } = {}) {
     ASSET_BASE: effectiveBase,
     PHOTO_SLUG: $('photoSlug').value,
     PHOTO_SIZE: parseInt($('photoSize').value, 10) || 96,
+    PHOTO_SHAPE: $('photoShape').value || 'round',
+    PHOTO_FOCUS: parseInt($('photoFocus').value, 10) || 50,
     FULL_NAME: $('fullName').value.trim(),
     TITLE: $('title').value,
     SHOW_COMPANY: $('showCompany').checked,
@@ -169,6 +248,8 @@ function render({ forPreview = false } = {}) {
     WEBSITE_TEXT: $('websiteText').value.trim(),
     WEBSITE_URL: $('websiteUrl').value.trim(),
     ADDRESS: $('address').value,
+    BOOK_SLUG: $('bookSlug').value,
+    BOOK_URL: $('bookUrl').value.trim(),
     LINKEDIN_URL: $('linkedin').value,
     FACEBOOK_URL: $('facebook').value,
     INSTAGRAM_URL: $('instagram').value,
@@ -178,23 +259,132 @@ function render({ forPreview = false } = {}) {
     SHOW_SOCIAL: $('showSocial').checked,
     SHOW_BAR: $('showBar').checked,
     SHOW_WEBSITE: $('showWebsite').checked,
+    CARD_MODE: $('cardMode').checked,
+    SHOW_DISCLAIMER: $('showDisclaimer').checked,
+    DISCLAIMER_OUTSIDE: $('disclaimerOutside').checked,
     DISCLAIMER: $('disclaimer').value.trim(),
   };
 
   const fullName = v.FULL_NAME || 'Your Name';
 
-  // Title block — one <div> per non-empty line; first line optionally gets "· SMAART Company"
+  // Title block — multiple display styles. Picked via titleStyle select.
+  // Supports per-title links via markdown syntax: [Title](https://url).
+  const parseTitle = (raw) => {
+    const m = raw.match(/^\[(.+)\]\((.+)\)$/);
+    return m ? { text: m[1].trim(), url: m[2].trim() } : { text: raw, url: '' };
+  };
+  // Wrap rendered content in an anchor when a URL is present. Style string is
+  // applied to whichever element wraps the text so the pill/link looks the same.
+  const linkWrap = (parsed, style, content) => parsed.url
+    ? `<a href="${esc(parsed.url)}" style="${style}text-decoration:none;">${content}</a>`
+    : `<span style="${style}">${content}</span>`;
   const titleLines = (v.TITLE || 'Your Title').split(/\r?\n/).map(s => s.trim()).filter(Boolean);
-  const titleBlock = titleLines.length
-    ? titleLines.map((line, i) => {
-        const suffix = (i === 0 && v.SHOW_COMPANY) ? ' &middot; SMAART Company' : '';
-        const mb = (i === titleLines.length - 1) ? '10px' : '0';
-        return `<div style="font-size:13px;color:#4A4A4A;margin:2px 0 ${mb} 0;line-height:1.35;">${esc(line)}${suffix}</div>`;
-      }).join('')
-    : '';
+  const parsedFromTextarea = titleLines.map(parseTitle);
+  // Append enabled subtitles from the dynamic list (both sources feed the render).
+  const parsedFromList = (typeof subtitles !== 'undefined' ? subtitles : [])
+    .filter(s => s.enabled && s.text && s.text.trim())
+    .map(s => ({ text: s.text.trim(), url: (s.url || '').trim() }));
+  const parsedTitles = parsedFromTextarea.concat(parsedFromList);
+  const titleStyle = $('titleStyle').value || 'stacked';
+  const companySuffix = v.SHOW_COMPANY ? ' &middot; SMAART Company' : '';
+  let titleBlock = '';
+  if (titleLines.length) {
+    const muted = 'font-size:13px;color:#4A4A4A;line-height:1.35;';
+    // Helper: render a piece of text as link or plain, applying link color
+    const asLink = (p, baseStyle, linkColor) => p.url
+      ? `<a href="${esc(p.url)}" style="${baseStyle}color:${linkColor};text-decoration:none;">${esc(p.text)}</a>`
+      : `<span style="${baseStyle}">${esc(p.text)}</span>`;
 
+    if (titleStyle === 'primary-tabs') {
+      // Primary title as elegant italic serif typography; rest as small pills.
+      // Every title becomes a clickable link when wrapped in [Text](url).
+      const [primary, ...rest] = parsedTitles;
+      const primaryBase = `font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:14px;font-weight:500;letter-spacing:0.3px;`;
+      const primaryText = asLink(primary, `${primaryBase}color:${primary.url ? '#0D004C' : '#0D004C'};`, '#0D004C');
+      const companyTail = v.SHOW_COMPANY
+        ? `<span style="color:#8A8A8A;font-family:Georgia,'Times New Roman',serif;font-size:12px;font-style:italic;font-weight:400;margin-left:4px;">— SMAART Company</span>`
+        : '';
+      const primaryRow = `<div style="margin:4px 0 6px 0;line-height:1.4;">${primaryText}${companyTail}</div>`;
+      const chipStyle = `display:inline-block;background:#F8F9FB;border:1px solid #E5E7EB;color:#6B7280;font-family:Arial,Helvetica,sans-serif;font-size:10px;font-weight:500;padding:2px 8px;border-radius:999px;margin:2px 4px 0 0;letter-spacing:0.15px;`;
+      const chip = (p) => p.url
+        ? `<a href="${esc(p.url)}" style="${chipStyle}text-decoration:none;">${esc(p.text)}</a>`
+        : `<span style="${chipStyle}">${esc(p.text)}</span>`;
+      const secondaryRow = rest.length
+        ? `<div style="margin:0 0 10px 0;line-height:1.7;">${rest.map(chip).join('')}</div>`
+        : '<div style="margin-bottom:10px;"></div>';
+      titleBlock = primaryRow + secondaryRow;
+    } else if (titleStyle === 'tabs') {
+      const chipStyle = `display:inline-block;background:#F5F6F8;border:1px solid #D6D9E0;color:#0D004C;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;margin:3px 5px 0 0;letter-spacing:0.2px;`;
+      const chip = (p) => p.url
+        ? `<a href="${esc(p.url)}" style="${chipStyle}text-decoration:none;">${esc(p.text)}</a>`
+        : `<span style="${chipStyle}">${esc(p.text)}</span>`;
+      const chips = parsedTitles.map(chip).join('');
+      const companyLine = v.SHOW_COMPANY
+        ? `<div style="font-size:12px;color:#6B7280;margin:8px 0 10px 0;line-height:1.35;">SMAART Company</div>`
+        : '';
+      titleBlock = `<div style="margin:4px 0 ${v.SHOW_COMPANY ? 0 : 10}px 0;line-height:1.9;">${chips}</div>${companyLine}`;
+    } else if (titleStyle === 'inline') {
+      const part = (p) => p.url
+        ? `<a href="${esc(p.url)}" style="color:#0D004C;text-decoration:none;">${esc(p.text)}</a>`
+        : esc(p.text);
+      const joined = parsedTitles.map(part).join(' &middot; ');
+      titleBlock = `<div style="${muted}margin:2px 0 10px 0;">${joined}${companySuffix}</div>`;
+    } else if (titleStyle === 'columns') {
+      const mid = Math.ceil(parsedTitles.length / 2);
+      const col1 = parsedTitles.slice(0, mid);
+      const col2 = parsedTitles.slice(mid);
+      const item = (p) => p.url
+        ? `<a href="${esc(p.url)}" style="color:#0D004C;text-decoration:none;">${esc(p.text)}</a>`
+        : esc(p.text);
+      const cellItems = (arr, isFirstCol) => arr.map((p, i) => {
+        const suffix = (i === 0 && isFirstCol && v.SHOW_COMPANY) ? companySuffix : '';
+        return `<div style="${muted}padding:1px 0;">${item(p)}${suffix}</div>`;
+      }).join('');
+      titleBlock = `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;margin:2px 0 10px 0;">
+        <tr>
+          <td style="vertical-align:top;padding-right:22px;">${cellItems(col1, true)}</td>
+          <td style="vertical-align:top;">${cellItems(col2, false)}</td>
+        </tr>
+      </table>`;
+    } else if (titleStyle === 'primary') {
+      const [first, ...rest] = parsedTitles;
+      const firstLink = first.url
+        ? `<a href="${esc(first.url)}" style="color:#0D004C;text-decoration:none;">${esc(first.text)}</a>`
+        : esc(first.text);
+      const firstLine = `<div style="font-size:13px;color:#4A4A4A;margin:2px 0 2px 0;line-height:1.35;font-weight:600;">${firstLink}${companySuffix}</div>`;
+      const restPart = (p) => p.url
+        ? `<a href="${esc(p.url)}" style="color:#8A8A8A;text-decoration:none;">${esc(p.text)}</a>`
+        : esc(p.text);
+      const restLine = rest.length
+        ? `<div style="font-size:12px;color:#8A8A8A;margin:0 0 10px 0;line-height:1.4;">${rest.map(restPart).join(', ')}</div>`
+        : '';
+      titleBlock = firstLine + restLine;
+    } else {
+      // stacked (default)
+      titleBlock = parsedTitles.map((p, i) => {
+        const suffix = (i === 0) ? companySuffix : '';
+        const mb = (i === parsedTitles.length - 1) ? '10px' : '0';
+        const inner = p.url
+          ? `<a href="${esc(p.url)}" style="color:#4A4A4A;text-decoration:none;">${esc(p.text)}</a>`
+          : esc(p.text);
+        return `<div style="${muted}margin:2px 0 ${mb} 0;">${inner}${suffix}</div>`;
+      }).join('');
+    }
+  }
+
+  const photoRadius = v.PHOTO_SHAPE === 'squared' ? '10px' : `${v.PHOTO_SIZE}px`;
+  // Frame the photo with an overflow-hidden wrapper. The image fills the
+  // entire circle edge-to-edge. The focus slider shifts which vertical slice
+  // of the 200×200 source shows: 0 = top of source, 100 = bottom.
+  const framedPhoto = (size, radius, alt) => {
+    const imgNatural = 200;
+    const maxShift = Math.max(0, imgNatural - size);
+    const shiftY = Math.round(maxShift * (v.PHOTO_FOCUS / 100));
+    const shiftX = Math.round((imgNatural - size) / 2);
+    return `<div style="display:inline-block;width:${size}px;height:${size}px;border-radius:${radius};overflow:hidden;line-height:0;"><img src="${v.ASSET_BASE}/team-images/${v.PHOTO_SLUG}.jpg${cacheBust}" width="${imgNatural}" height="${imgNatural}" alt="${esc(alt)}" style="display:block;width:${imgNatural}px;height:${imgNatural}px;margin:-${shiftY}px 0 0 -${shiftX}px;border:0;" /></div>`;
+  };
   const photoCell = v.PHOTO_SLUG
-    ? `<td style="padding:0 20px 0 0;vertical-align:top;"><img src="${v.ASSET_BASE}/team-images/${v.PHOTO_SLUG}.jpg${cacheBust}" width="${v.PHOTO_SIZE}" height="${v.PHOTO_SIZE}" alt="${esc(fullName)}" style="display:block;width:${v.PHOTO_SIZE}px;height:${v.PHOTO_SIZE}px;border-radius:${v.PHOTO_SIZE}px;" /></td>`
+    ? `<td style="padding:0 20px 0 0;vertical-align:top;">${framedPhoto(v.PHOTO_SIZE, photoRadius, fullName)}</td>`
     : '';
 
   // Contact block — two styles: stacked with T:/E: labels, or inline with middot.
@@ -233,10 +423,7 @@ function render({ forPreview = false } = {}) {
     ? `<div style="font-size:12px;color:#4A4A4A;margin-top:6px;line-height:1.4;">${addrLines.map(esc).join('<br />')}</div>`
     : '';
 
-  // Logo + social row
-  const logoCell = v.SHOW_LOGO
-    ? `<td style="padding:0 14px 0 0;vertical-align:middle;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="28" style="display:block;height:28px;border:0;" /></a></td>`
-    : '';
+  // Social icons row (logo lives in the right-corner cell now)
   const socialCells = v.SHOW_SOCIAL ? [
     ['linkedin', 'LinkedIn', v.LINKEDIN_URL],
     ['facebook', 'Facebook', v.FACEBOOK_URL],
@@ -247,44 +434,605 @@ function render({ forPreview = false } = {}) {
     const pad = i === 0 ? '0 6px 0 0' : '0 6px';
     return `<td style="padding:${pad};vertical-align:middle;"><a href="${esc(url)}"><img src="${v.ASSET_BASE}/social-icons/${slug}.png${cacheBust}" alt="${label}" width="22" height="22" style="display:block;width:22px;height:22px;border:0;" /></a></td>`;
   }).join('') : '';
-  const iconRow = (v.SHOW_LOGO || v.SHOW_SOCIAL)
-    ? `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-top:12px;border-collapse:collapse;"><tr>${logoCell}${socialCells}</tr></table>`
+  const socialRow = v.SHOW_SOCIAL
+    ? `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-top:12px;border-collapse:collapse;"><tr>${socialCells}</tr></table>`
     : '';
 
-  const disclaimerBlock = v.DISCLAIMER
-    ? `<div style="font-size:11px;color:#8A8A8A;margin-top:10px;line-height:1.4;">${esc(v.DISCLAIMER).replace(/\n/g, '<br />')}</div>`
+  // Accent image (book cover / award) — optional portrait image rendered as a
+  // right-side cell on layouts that support it. 100px tall, preserves aspect.
+  const bookHeight = 100;
+  const bookImg = v.BOOK_SLUG
+    ? `<img src="${v.ASSET_BASE}/books/${v.BOOK_SLUG}.jpg${cacheBust}" alt="Book cover" height="${bookHeight}" style="display:block;height:${bookHeight}px;border:0;border-radius:4px;" />`
+    : '';
+  const bookLink = v.BOOK_SLUG
+    ? (v.BOOK_URL ? `<a href="${esc(v.BOOK_URL)}" style="text-decoration:none;">${bookImg}</a>` : bookImg)
+    : '';
+  const bookCell = v.BOOK_SLUG
+    ? `<td style="vertical-align:top;padding:0 16px 0 0;">${bookLink}</td>`
     : '';
 
+  // SMAART logo — top-right corner cell. Small (28px) so it reads as a brand
+  // mark inside the Card-mode frame without competing with the photo + name.
+  const logoCornerCell = v.SHOW_LOGO
+    ? `<td style="vertical-align:top;padding:0 0 0 24px;text-align:right;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="28" style="display:block;height:28px;border:0;margin-left:auto;" /></a></td>`
+    : '';
+
+  // Disclaimer — gray box rendered AFTER the main table (not inside the right
+  // cell) so the green bar only runs the height of the photo. Disclaimer sits
+  // below the card, framed by the signature above it.
+  const disclaimerBlock = (v.SHOW_DISCLAIMER && v.DISCLAIMER)
+    ? `<div style="margin-top:14px;padding:12px 14px;background:#F5F6F8;border:1px solid #E5E7EB;border-radius:8px;font-size:11px;color:#6B7280;line-height:1.5;max-width:620px;">${esc(v.DISCLAIMER).replace(/\n/g, '<br />')}</div>`
+    : '';
+
+  // Outlined social row — pure CSS, no image files. Shape per brand mirrors
+  // the filled PNG icons in social-icons/ (drawn by scripts/build-assets.py):
+  // LinkedIn/Facebook/X are circles, Instagram is a rounded square (~23%),
+  // YouTube is a wide rounded rectangle. White fill + navy border + navy
+  // glyph — the exact inverse of the filled PNGs used in Classic/Branded.
+  const outlinedSocialRow = v.SHOW_SOCIAL ? (() => {
+    const NAVY = '#0D004C';
+    const fontStack = "-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif";
+    const base = `display:inline-block;background:#FFFFFF;border:2px solid ${NAVY};color:${NAVY};font-family:${fontStack};font-weight:800;text-align:center;text-decoration:none;margin-right:6px;vertical-align:middle;box-sizing:border-box;`;
+    // [label, url, glyph, width, height, radius, fontSize, lineHeight, letterSpacing]
+    const items = [
+      ['LinkedIn',  v.LINKEDIN_URL,  'in', 28, 28, '50%', 13, '24px', '-0.5px'],
+      ['Facebook',  v.FACEBOOK_URL,  'f',  28, 28, '50%', 17, '22px', '0'],
+      ['Instagram', v.INSTAGRAM_URL, '◎',  28, 28, '6px', 18, '22px', '0'],
+      ['X',         v.X_URL,         'X',  28, 28, '50%', 14, '24px', '0'],
+      ['YouTube',   v.YOUTUBE_URL,   '▶',  36, 26, '6px', 12, '20px', '0'],
+    ];
+    const links = items.map(([label, url, glyph, w, h, r, fs, lh, ls]) =>
+      `<a href="${esc(url)}" aria-label="${label}" style="${base}width:${w}px;height:${h}px;border-radius:${r};font-size:${fs}px;line-height:${lh};letter-spacing:${ls};">${glyph}</a>`
+    ).join('');
+    return `<div style="margin-top:10px;">${links}</div>`;
+  })() : '';
+
+  // Card-mode wrapper — rounded, shadowed container around the whole signature.
+  const cardOpen = v.CARD_MODE
+    ? `<div style="display:inline-block;padding:22px 26px;background:#FFFFFF;border:1px solid #E5E7EB;border-radius:12px;box-shadow:0 1px 4px rgba(13,0,76,0.08);font-family:Arial,Helvetica,sans-serif;">`
+    : '';
+  const cardClose = v.CARD_MODE ? `</div>` : '';
+  // Disclaimer placement: inside the card (default) or below it (toggle).
+  // When card mode is off, both render identically — the wrappers are empty.
+  const discInside  = v.DISCLAIMER_OUTSIDE ? '' : disclaimerBlock;
+  const discOutside = v.DISCLAIMER_OUTSIDE ? disclaimerBlock : '';
+
+  const barHex = $('barColor').value === 'navy' ? '#0D004C' : '#39B54A';
   const rightCellStyle = v.SHOW_BAR
-    ? 'vertical-align:top;border-left:3px solid #39B54A;padding:0 0 0 18px;'
+    ? `vertical-align:top;border-left:3px solid ${barHex};padding:0 0 0 18px;`
     : 'vertical-align:top;padding:0;';
 
-  return `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="font-family:Arial,Helvetica,sans-serif;color:#111111;font-size:14px;line-height:1.45;border-collapse:collapse;">
+  const layout = opts.layoutOverride || $('layout').value || 'classic';
+  const nameLine = `<div style="font-size:18px;font-weight:700;color:#0D004C;letter-spacing:0.2px;line-height:1.2;">${esc(fullName)}</div>`;
+  const tableOpen = `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="font-family:Arial,Helvetica,sans-serif;color:#111111;font-size:14px;line-height:1.45;border-collapse:collapse;">`;
+
+  if (layout === 'text-only') {
+    // Zero-image layout. Cannot break. Recipients see plain-text-styled HTML.
+    const inlineContact = [v.PHONE_DISPLAY && `T: ${esc(v.PHONE_DISPLAY)}`, v.EMAIL && `E: ${esc(v.EMAIL)}`].filter(Boolean).join('&nbsp;&middot;&nbsp;');
+    const websiteText = (v.SHOW_WEBSITE && (v.WEBSITE_URL || v.WEBSITE_TEXT))
+      ? (v.WEBSITE_TEXT || (v.WEBSITE_URL || '').replace(/^https?:\/\//, '').replace(/\/$/, ''))
+      : '';
+    const textBody = `<div style="font-family:Arial,Helvetica,sans-serif;color:#111111;font-size:14px;line-height:1.5;">
+      ${nameLine}
+      ${titleBlock}
+      ${inlineContact ? `<div style="font-size:13px;margin-top:4px;">${inlineContact}</div>` : ''}
+      ${websiteText ? `<div style="font-size:13px;margin-top:2px;"><a href="${esc(v.WEBSITE_URL)}" style="color:#0D004C;text-decoration:none;font-weight:600;">${esc(websiteText)}</a></div>` : ''}
+      ${addressBlock}
+      ${outlinedSocialRow}
+    </div>`;
+    return `${cardOpen}${textBody}${discInside}${cardClose}${discOutside}`;
+  }
+
+  if (layout === 'minimal') {
+    // Photo + info only. No logo cell, no social row, no address.
+    const inline = (emailPart && phonePart) ? `${emailPart}&nbsp;&middot;&nbsp;${phonePart}` : (emailPart || phonePart);
+    const minimalContact = inline ? `<div style="font-size:13px;color:#111111;margin-top:4px;">${inline}</div>` : '';
+    const minBody = `${tableOpen}
+      <tr>
+        ${photoCell}
+        <td style="${rightCellStyle}">
+          ${nameLine}
+          ${titleBlock}
+          ${minimalContact}
+          ${websiteBlock}
+          ${outlinedSocialRow}
+        </td>
+      </tr>
+    </table>`;
+    return `${cardOpen}${minBody}${discInside}${cardClose}${discOutside}`;
+  }
+
+  if (layout === 'branded') {
+    // Small SMAART logo above the name, no right-corner logo. Keeps proportions
+    // tight — logo ~20px feels like a brand mark, subordinate to the 18px name.
+    const brandedLogo = v.SHOW_LOGO
+      ? `<div style="margin-bottom:6px;line-height:0;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="20" style="display:block;height:20px;border:0;" /></a></div>`
+      : '';
+    const brandedBody = `${tableOpen}
+      <tr>
+        ${photoCell}
+        <td style="${rightCellStyle}">
+          ${brandedLogo}
+          ${nameLine}
+          ${titleBlock}
+          ${contactBlock}
+          ${websiteBlock}
+          ${addressBlock}
+          ${socialRow}
+        </td>
+        ${bookCell}
+      </tr>
+    </table>`;
+    return `${cardOpen}${brandedBody}${discInside}${cardClose}${discOutside}`;
+  }
+
+  if (layout === 'designer') {
+    // Designer card: large rectangular photo on the left, cursive name, icon-
+    // prefixed contact lines, and a right sidebar with the SMAART logo and the
+    // filled-navy PNG social icons underneath. Inspired by photographer-style
+    // signatures. Cursive font stack degrades to italic on clients without it.
+    const big = Math.max(150, Math.round(v.PHOTO_SIZE * 1.7));
+    const designerRadius = v.PHOTO_SHAPE === 'squared' ? '10px' : `${big}px`;
+    const designerPhotoCell = v.PHOTO_SLUG
+      ? `<td style="padding:0 22px 0 0;vertical-align:top;">${framedPhoto(big, designerRadius, fullName)}</td>`
+      : '';
+
+    const nameHeading = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:24px;font-weight:700;color:#0D004C;line-height:1.15;letter-spacing:0.2px;">${esc(fullName)}</div>`;
+    const roleLine = titleLines.length
+      ? `<div style="font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#6B7280;letter-spacing:1.2px;text-transform:uppercase;margin:3px 0 14px 0;font-weight:600;">${titleLines.map(esc).join(' &middot; ')}</div>`
+      : '';
+
+    // Clean Unicode glyph in navy (no circle backdrop) — works across Gmail,
+    // Apple Mail, Outlook. Force text-presentation with VS15 so they don't
+    // render as color emoji on some platforms.
+    const ICON = {
+      phone: '\u260E\uFE0E',    // ☎ telephone
+      email: '\u2709\uFE0E',    // ✉ envelope
+      web:   '\u2315\uFE0E',    // ⌕ (used as compact web glyph) - fall back to @ if unsupported
+      addr:  '\u2691\uFE0E',    // ⚑ flag marker
+    };
+    const iconGlyph = (g) => `<span style="display:inline-block;width:18px;color:#0D004C;font-size:15px;line-height:1;text-align:center;margin-right:10px;vertical-align:middle;font-family:Arial,'Apple Color Emoji','Segoe UI Symbol',sans-serif;">${g}</span>`;
+    const row = (icon, label, body) => body
+      ? `<div style="font-size:13px;color:#111111;margin:5px 0;line-height:1.4;">${iconGlyph(icon)}<strong style="font-weight:700;">${label}:</strong>&nbsp;${body}</div>`
+      : '';
+    const webBody = (v.SHOW_WEBSITE && (v.WEBSITE_URL || v.WEBSITE_TEXT))
+      ? `<a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="color:#0D004C;text-decoration:none;">${esc(v.WEBSITE_TEXT || (v.WEBSITE_URL || '').replace(/^https?:\/\//, '').replace(/\/$/, ''))}</a>`
+      : '';
+    const addrBody = addrLines.length ? addrLines.map(esc).join(', ') : '';
+    const contactRows = [
+      row(ICON.phone, 'Phone',   phonePart),
+      row(ICON.email, 'Email',   emailPart),
+      row(ICON.web,   'Website', webBody),
+      row(ICON.addr,  'Address', addrBody),
+    ].join('');
+
+    // Right sidebar — logo stacked over "SMAART Company" + filled-navy socials
+    const sidebarSocials = v.SHOW_SOCIAL
+      ? `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin:10px auto 0;border-collapse:collapse;"><tr>${[
+          ['linkedin','LinkedIn',v.LINKEDIN_URL],
+          ['facebook','Facebook',v.FACEBOOK_URL],
+          ['instagram','Instagram',v.INSTAGRAM_URL],
+          ['x','X',v.X_URL],
+          ['youtube','YouTube',v.YOUTUBE_URL],
+        ].map(([slug,label,url],i) => {
+          const pad = i === 0 ? '0 4px 0 0' : '0 4px';
+          return `<td style="padding:${pad};vertical-align:middle;"><a href="${esc(url)}"><img src="${v.ASSET_BASE}/social-icons/${slug}.png${cacheBust}" alt="${label}" width="22" height="22" style="display:block;width:22px;height:22px;border:0;" /></a></td>`;
+        }).join('')}</tr></table>`
+      : '';
+    const sidebarLogo = v.SHOW_LOGO
+      ? `<div style="margin-bottom:8px;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="42" style="display:block;height:42px;border:0;margin:0 auto;" /></a></div>`
+      : '';
+    const sidebarBook = v.BOOK_SLUG
+      ? `<div style="margin-top:12px;">${bookLink}</div>`
+      : '';
+    const sidebarCell = (v.SHOW_LOGO || v.SHOW_SOCIAL || v.BOOK_SLUG)
+      ? `<td style="vertical-align:middle;padding:0 0 0 22px;border-left:1px solid #E5E7EB;text-align:center;min-width:150px;">${sidebarLogo}${(v.SHOW_LOGO) ? `<div style="font-size:12px;font-weight:700;color:#0D004C;letter-spacing:0.8px;text-transform:uppercase;">SMAART Company</div>` : ''}${sidebarSocials}${sidebarBook}</td>`
+      : '';
+
+    const designerBody = `${tableOpen}
+      <tr>
+        ${designerPhotoCell}
+        <td style="vertical-align:top;">
+          ${nameHeading}
+          ${roleLine}
+          ${contactRows}
+        </td>
+        ${sidebarCell}
+      </tr>
+    </table>`;
+    return `${cardOpen}${designerBody}${discInside}${cardClose}${discOutside}`;
+  }
+
+  if (layout === 'triptych') {
+    // Three sections with thin vertical dividers: identity · contact · branding.
+    const triptychPhoto = v.PHOTO_SLUG
+      ? `<div style="text-align:center;">${framedPhoto(v.PHOTO_SIZE, photoRadius, fullName)}</div>`
+      : '';
+    const identitySection = `<td style="vertical-align:top;padding:0 22px 0 0;text-align:center;border-right:1px solid #E5E7EB;min-width:140px;">
+      ${triptychPhoto}
+      <div style="margin-top:10px;font-size:15px;font-weight:700;color:#0D004C;line-height:1.2;">${esc(fullName)}</div>
+      ${titleLines.length ? `<div style="margin-top:4px;font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:12px;color:#4A4A4A;line-height:1.35;">${esc(titleLines[0])}</div>` : ''}
+    </td>`;
+
+    const contactItem = (icon, body) => body ? `<div style="font-size:12px;color:#111111;margin:4px 0;line-height:1.4;"><span style="display:inline-block;width:14px;color:#0D004C;margin-right:6px;vertical-align:middle;font-family:Arial,sans-serif;">${icon}</span>${body}</div>` : '';
+    const webBody = (v.SHOW_WEBSITE && (v.WEBSITE_URL || v.WEBSITE_TEXT))
+      ? `<a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="color:#0D004C;text-decoration:none;">${esc(v.WEBSITE_TEXT || (v.WEBSITE_URL || '').replace(/^https?:\/\//, '').replace(/\/$/, ''))}</a>`
+      : '';
+    const addrBody = addrLines.length ? addrLines.map(esc).join('<br />') : '';
+    const contactSection = `<td style="vertical-align:top;padding:0 22px;border-right:1px solid #E5E7EB;min-width:180px;">
+      ${contactItem('\u260E\uFE0E', phonePart)}
+      ${contactItem('\u2709\uFE0E', emailPart)}
+      ${contactItem('\u2315\uFE0E', webBody)}
+      ${contactItem('\u2691\uFE0E', addrBody)}
+    </td>`;
+
+    const branding = `
+      ${v.SHOW_LOGO ? `<div style="margin-bottom:8px;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="36" style="display:block;height:36px;border:0;margin:0 auto;" /></a></div>` : ''}
+      ${socialRow.replace('margin-top:12px', 'margin:10px auto 0')}
+      ${v.BOOK_SLUG ? `<div style="margin-top:12px;">${bookLink}</div>` : ''}
+    `;
+    const brandingSection = `<td style="vertical-align:middle;padding:0 0 0 22px;text-align:center;min-width:150px;">${branding}</td>`;
+
+    const triptychBody = `${tableOpen}
+      <tr>
+        ${identitySection}
+        ${contactSection}
+        ${brandingSection}
+      </tr>
+    </table>`;
+    return `${cardOpen}${triptychBody}${discInside}${cardClose}${discOutside}`;
+  }
+
+  if (layout === 'banner') {
+    // Banner: two-row card. Top row is white — photo, name/role/phone on the
+    // left, social icons (filled navy PNGs) top-right. Bottom row is a full-
+    // width navy bar — address + email on the left in white, white SMAART
+    // logo + company name on the right.
+    const NAVY = '#0D004C';
+    const bannerRadius = v.PHOTO_SHAPE === 'squared' ? '6px' : '92px';
+    const bannerPhoto = v.PHOTO_SLUG
+      ? `<td rowspan="1" style="padding:16px 18px 16px 18px;vertical-align:top;width:100px;">${framedPhoto(92, bannerRadius, fullName)}</td>`
+      : '';
+
+    const phoneLine = phoneShown ? `<div style="font-size:12px;color:#111111;">Call: ${phonePart}</div>` : '';
+    // Socials inline under the call line — filled-navy PNG icons, left-aligned
+    const bannerSocials = v.SHOW_SOCIAL
+      ? `<div style="margin-top:10px;">${[
+          ['linkedin','LinkedIn',v.LINKEDIN_URL],
+          ['facebook','Facebook',v.FACEBOOK_URL],
+          ['instagram','Instagram',v.INSTAGRAM_URL],
+          ['x','X',v.X_URL],
+          ['youtube','YouTube',v.YOUTUBE_URL],
+        ].map(([slug,label,url],i) =>
+          `<a href="${esc(url)}" style="text-decoration:none;margin-right:${i === 4 ? 0 : 4}px;display:inline-block;"><img src="${v.ASSET_BASE}/social-icons/${slug}.png${cacheBust}" alt="${label}" width="22" height="22" style="display:inline-block;width:22px;height:22px;border:0;vertical-align:middle;" /></a>`
+        ).join('')}</div>`
+      : '';
+    const topMiddle = `<td style="padding:18px 16px 14px 0;vertical-align:top;">
+      <div style="font-size:17px;font-weight:700;color:#0D004C;line-height:1.1;">${esc(fullName)}</div>
+      ${titleLines.length ? `<div style="font-size:12px;color:#6B7280;margin:2px 0 8px 0;">${titleLines.map(esc).join(' &middot; ')}</div>` : ''}
+      ${phoneLine}
+      ${bannerSocials}
+    </td>`;
+
+    // Bottom navy bar
+    const bottomAddr = addrLines.length
+      ? `<div style="font-size:12px;color:#FFFFFF;line-height:1.5;">${addrLines.map(esc).join('<br />')}</div>`
+      : '';
+    const bottomEmail = v.EMAIL
+      ? `<div style="font-size:12px;color:#FFFFFF;line-height:1.5;margin-top:2px;"><span style="color:rgba(255,255,255,0.75);">E-mail:</span>&nbsp;<a href="mailto:${esc(v.EMAIL)}" style="color:#FFFFFF;text-decoration:none;">${esc(v.EMAIL)}</a></div>`
+      : '';
+    const bottomWeb = (v.SHOW_WEBSITE && (v.WEBSITE_URL || v.WEBSITE_TEXT))
+      ? `<div style="font-size:12px;color:#FFFFFF;line-height:1.5;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="color:#FFFFFF;text-decoration:none;">${esc(v.WEBSITE_TEXT || (v.WEBSITE_URL || '').replace(/^https?:\/\//, '').replace(/\/$/, ''))}</a></div>`
+      : '';
+
+    const bottomLeftCell = `<td colspan="2" style="padding:14px 18px;background:${NAVY};vertical-align:middle;">${bottomAddr}${bottomEmail}${bottomWeb || ''}</td>`;
+    const bottomRightCell = `<td style="padding:14px 18px;background:${NAVY};vertical-align:middle;text-align:right;white-space:nowrap;">
+      ${v.SHOW_LOGO ? `<a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="text-decoration:none;display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white.png${cacheBust}" alt="SMAART Company" height="32" style="display:inline-block;height:32px;border:0;vertical-align:middle;" /></a>` : ''}
+    </td>`;
+
+    const bannerBody = `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="font-family:Arial,Helvetica,sans-serif;color:#111111;font-size:14px;line-height:1.45;border-collapse:collapse;border:1px solid #E5E7EB;border-radius:8px;overflow:hidden;max-width:640px;">
+      <tr>
+        ${bannerPhoto}
+        ${topMiddle}
+      </tr>
+      <tr>
+        ${bottomLeftCell}
+        ${bottomRightCell}
+      </tr>
+    </table>`;
+    return `${cardOpen}${bannerBody}${discInside}${cardClose}${discOutside}`;
+  }
+
+  // classic (default): photo + info + optional book cover + right-corner logo
+  const classicBody = `${tableOpen}
   <tr>
     ${photoCell}
     <td style="${rightCellStyle}">
-      <div style="font-size:18px;font-weight:700;color:#0D004C;letter-spacing:0.2px;line-height:1.2;">${esc(fullName)}</div>
+      ${nameLine}
       ${titleBlock}
       ${contactBlock}
       ${websiteBlock}
       ${addressBlock}
-      ${iconRow}
-      ${disclaimerBlock}
+      ${socialRow}
     </td>
+    ${bookCell}
+    ${logoCornerCell}
   </tr>
 </table>`;
+  return `${cardOpen}${classicBody}${discInside}${cardClose}${discOutside}`;
+}
+
+// Separate disclaimer renderer — NOT included inside any signature card.
+// Shown once below the gallery in preview; appended to the copied HTML.
+function renderDisclaimer() {
+  const text = $('disclaimer').value.trim();
+  if (!$('showDisclaimer').checked || !text) return '';
+  const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  return `<div style="margin-top:14px;padding:12px 14px;background:#F5F6F8;border:1px solid #E5E7EB;border-radius:8px;font-size:11px;color:#6B7280;line-height:1.5;max-width:620px;">${esc(text).replace(/\n/g, '<br />')}</div>`;
+}
+
+// Fetch photo → resize to display size on canvas → base64 data URI. Keeps
+// signature under Gmail's ~10KB clip limit. Returns null on any failure,
+// caller falls back to the original URL.
+async function photoToDataUri(url, displaySize) {
+  try {
+    const r = await fetch(url, { mode: 'cors' });
+    if (!r.ok) return null;
+    const blob = await r.blob();
+    const bitmap = await createImageBitmap(blob);
+    const canvas = document.createElement('canvas');
+    const size = Math.max(96, Math.min(200, displaySize * 2)); // 2x for retina, clamped
+    canvas.width = canvas.height = size;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(bitmap, 0, 0, size, size);
+    return canvas.toDataURL('image/jpeg', 0.82);
+  } catch {
+    return null;
+  }
+}
+
+async function renderForCopy() {
+  let html = render();
+  if (!$('embedPhoto').checked) return html;
+  const slug = $('photoSlug').value;
+  if (!slug) return html;
+  // Fetch from local server when running from localhost (fresh), else jsDelivr
+  const base = IS_LOCAL ? location.origin : $('assetBase').value.replace(/\/+$/, '');
+  const photoUrl = `${base}/team-images/${slug}.jpg`;
+  const size = parseInt($('photoSize').value, 10) || 96;
+  const dataUri = await photoToDataUri(photoUrl, size);
+  if (!dataUri) return html;
+  // Replace every occurrence of the photo src (both URL-with-cacheBust variants)
+  const escRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const publicBase = $('assetBase').value.replace(/\/+$/, '');
+  const pattern = new RegExp(escRe(publicBase) + '/team-images/' + escRe(slug) + '\\.jpg[^"\']*', 'g');
+  return html.replace(pattern, dataUri);
+}
+
+const LAYOUTS = [
+  { id: 'classic',   label: 'Classic',        hint: 'photo · info · logo right-corner' },
+  { id: 'branded',   label: 'Branded header', hint: 'small logo above name' },
+  { id: 'designer',  label: 'Designer card',  hint: 'large photo · cursive name · icon contacts · right sidebar w/ logo' },
+  { id: 'triptych',  label: 'Triptych',       hint: 'three sections: identity · contact · branding' },
+  { id: 'banner',    label: 'Banner',         hint: 'two-row card · top white · bottom navy bar w/ logo + address' },
+  { id: 'minimal',   label: 'Minimal',        hint: 'photo + info, inline contacts, outlined socials' },
+  { id: 'text-only', label: 'Text-only',      hint: 'zero images + CSS-outlined socials — can never break' },
+];
+
+// Saved contacts — persisted in localStorage. Each entry: { name, email }.
+const CONTACTS_KEY = 'smaart-sig-contacts';
+let savedContacts;
+try {
+  const stored = JSON.parse(localStorage.getItem(CONTACTS_KEY) || 'null');
+  savedContacts = Array.isArray(stored) ? stored : [];
+} catch { savedContacts = []; }
+function saveContacts() {
+  try { localStorage.setItem(CONTACTS_KEY, JSON.stringify(savedContacts)); } catch {}
+}
+function renderContactsSelect() {
+  const sel = $('savedContact');
+  if (!sel) return;
+  const current = sel.value;
+  sel.innerHTML = '<option value="">— pick a saved contact —</option>' +
+    savedContacts.map((c, i) => `<option value="${i}">${String(c.name).replace(/"/g,'&quot;')} — ${String(c.email).replace(/"/g,'&quot;')}</option>`).join('');
+  if (current && current !== '' && savedContacts[+current]) sel.value = current;
+}
+// Auto-fill email from first name when user types in the Full Name field.
+// Only overwrite the email if it's empty or matches the auto-pattern
+// (firstword@smaartcompany.com) so we don't clobber a manually-typed email.
+function maybeAutofillEmail() {
+  const name = $('fullName').value.trim();
+  const firstWord = name.split(/\s+/)[0].toLowerCase().replace(/[^a-z]/g, '');
+  if (!firstWord) return;
+  const current = $('email').value.trim().toLowerCase();
+  const suggested = firstWord + '@smaartcompany.com';
+  if (!current || /^[a-z]+@smaartcompany\.com$/.test(current)) {
+    $('email').value = suggested;
+  }
+}
+
+// Subtitle list state — persisted in localStorage. Each entry: { enabled, text, url }.
+const SUBTITLES_KEY = 'smaart-sig-subtitles';
+const SUBTITLES_DEFAULT = [
+  { enabled: true,  text: 'IRS Law Practitioner',              url: '' },
+  { enabled: true,  text: 'Tax Court Counsel',                 url: '' },
+  { enabled: true,  text: 'Financial Planner',                 url: '' },
+  { enabled: true,  text: 'Insurance Broker',                  url: '' },
+  { enabled: true,  text: 'Professional Accountant',           url: '' },
+  { enabled: true,  text: 'Commercial Loan Broker',            url: '' },
+  { enabled: true,  text: 'Investment Advisor Representative', url: '' },
+];
+let subtitles;
+try {
+  const stored = JSON.parse(localStorage.getItem(SUBTITLES_KEY) || 'null');
+  subtitles = Array.isArray(stored) && stored.length ? stored : SUBTITLES_DEFAULT.slice();
+} catch { subtitles = SUBTITLES_DEFAULT.slice(); }
+
+function saveSubtitles() {
+  try { localStorage.setItem(SUBTITLES_KEY, JSON.stringify(subtitles)); } catch {}
+}
+function escAttr(s) { return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;'); }
+function renderSubtitleList() {
+  const container = $('subtitleList');
+  if (!container) return;
+  container.innerHTML = subtitles.map((s, i) => `
+    <div class="subtitle-row" data-idx="${i}">
+      <input type="checkbox" class="sub-enabled" ${s.enabled ? 'checked' : ''} aria-label="Enable subtitle" />
+      <input type="text" class="sub-text" value="${escAttr(s.text)}" placeholder="Subtitle" />
+      <input type="text" class="sub-url" value="${escAttr(s.url)}" placeholder="Link (optional)" />
+      <button type="button" class="sub-delete" aria-label="Delete subtitle">&times;</button>
+    </div>
+  `).join('');
+  container.querySelectorAll('.subtitle-row').forEach(row => {
+    const idx = +row.dataset.idx;
+    row.querySelector('.sub-enabled').addEventListener('change', e => { subtitles[idx].enabled = e.target.checked; saveSubtitles(); update(); });
+    row.querySelector('.sub-text').addEventListener('input', e => { subtitles[idx].text = e.target.value; saveSubtitles(); update(); });
+    row.querySelector('.sub-url').addEventListener('input', e => { subtitles[idx].url = e.target.value; saveSubtitles(); update(); });
+    row.querySelector('.sub-delete').addEventListener('click', () => { subtitles.splice(idx, 1); saveSubtitles(); renderSubtitleList(); update(); });
+  });
+}
+
+// Hidden-layouts set persisted in localStorage so hide/show survives refresh.
+const HIDDEN_KEY = 'smaart-sig-hidden-layouts';
+function getHidden() {
+  try { return new Set(JSON.parse(localStorage.getItem(HIDDEN_KEY) || '[]')); }
+  catch { return new Set(); }
+}
+function setHidden(set) {
+  try { localStorage.setItem(HIDDEN_KEY, JSON.stringify([...set])); } catch {}
 }
 
 function update() {
   $('photoSizeVal').textContent = $('photoSize').value;
-  $('preview').innerHTML = render({ forPreview: true });
+  $('photoFocusVal').textContent = $('photoFocus').value;
+  const selected = $('layout').value;
+  const hidden = getHidden();
+  const visibleLayouts = LAYOUTS.filter(l => !hidden.has(l.id));
+  // If the selected layout was hidden, fall back to the first visible one
+  if (hidden.has(selected) && visibleLayouts.length) {
+    $('layout').value = visibleLayouts[0].id;
+    return update();
+  }
+  const cards = visibleLayouts.map(l => {
+    const isActive = l.id === $('layout').value;
+    const action = isActive
+      ? '<span class="variant-badge">SELECTED · this is what Copy HTML exports</span>'
+      : '<button class="variant-pick" type="button" data-pick="' + l.id + '">Use this</button>';
+    return `<div class="variant-card${isActive ? ' active' : ''}" data-layout="${l.id}">
+      <div class="variant-head">
+        <span class="variant-name">${l.label}</span>
+        <span class="variant-hint">${l.hint}</span>
+        ${action}
+        <button class="variant-delete" type="button" data-hide="${l.id}" title="Hide this layout from the gallery" aria-label="Hide ${l.label}">&times;</button>
+      </div>
+      <div class="variant-body">${render({ forPreview: true, layoutOverride: l.id })}</div>
+    </div>`;
+  }).join('');
+  const restoreBtn = hidden.size
+    ? `<button class="variant-restore" type="button" id="restoreLayouts">Restore ${hidden.size} hidden layout${hidden.size === 1 ? '' : 's'}</button>`
+    : '';
+  $('preview').innerHTML = cards + restoreBtn;
+  $('preview').querySelectorAll('[data-pick]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      $('layout').value = btn.dataset.pick;
+      update();
+    });
+  });
+  $('preview').querySelectorAll('[data-hide]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const id = btn.dataset.hide;
+      const h = getHidden();
+      h.add(id);
+      setHidden(h);
+      update();
+    });
+  });
+  const restore = $('restoreLayouts');
+  if (restore) restore.addEventListener('click', () => {
+    setHidden(new Set());
+    update();
+  });
 }
 document.querySelectorAll('input, select, textarea').forEach(el => el.addEventListener('input', update));
 document.querySelectorAll('input[type="checkbox"]').forEach(el => el.addEventListener('change', update));
+
+// Phone formatter — normalize any US phone input to "+1 (XXX) XXX-XXXX".
+// Applied on blur so formatting doesn't fight the user mid-typing.
+function formatUSPhone(raw) {
+  const digits = String(raw).replace(/\D/g, '');
+  let num = digits;
+  if (num.length === 11 && num.startsWith('1')) num = num.slice(1);
+  if (num.length !== 10) return null;
+  return `+1 (${num.slice(0, 3)}) ${num.slice(3, 6)}-${num.slice(6)}`;
+}
+function normalizePhoneFields() {
+  const formatted = formatUSPhone($('phone').value);
+  if (formatted) $('phone').value = formatted;
+  const digits = $('phone').value.replace(/\D/g, '');
+  if (digits.length === 10) $('phoneE164').value = '+1' + digits;
+  else if (digits.length === 11) $('phoneE164').value = '+' + digits;
+  update();
+}
+$('phone').addEventListener('blur', normalizePhoneFields);
+$('phoneE164').addEventListener('blur', () => {
+  // Mirror E.164 changes back to display if display is empty
+  if (!$('phone').value.trim()) {
+    const formatted = formatUSPhone($('phoneE164').value);
+    if (formatted) { $('phone').value = formatted; update(); }
+  }
+});
+
+// Saved contacts wiring
+renderContactsSelect();
+$('fullName').addEventListener('input', () => { maybeAutofillEmail(); update(); });
+$('savedContact').addEventListener('change', () => {
+  const idx = $('savedContact').value;
+  if (idx === '' || !savedContacts[+idx]) return;
+  const c = savedContacts[+idx];
+  $('fullName').value = c.name;
+  $('email').value = c.email;
+  update();
+});
+$('saveContact').addEventListener('click', () => {
+  const name = $('fullName').value.trim();
+  const email = $('email').value.trim();
+  if (!name || !email) { $('saveContact').textContent = 'Need name + email'; setTimeout(() => $('saveContact').textContent = '+ Save', 1400); return; }
+  const existing = savedContacts.findIndex(c => c.email.toLowerCase() === email.toLowerCase());
+  if (existing >= 0) savedContacts[existing] = { name, email };
+  else savedContacts.push({ name, email });
+  saveContacts();
+  renderContactsSelect();
+  $('savedContact').value = savedContacts.findIndex(c => c.email.toLowerCase() === email.toLowerCase());
+  $('saveContact').textContent = 'Saved';
+  setTimeout(() => $('saveContact').textContent = '+ Save', 1400);
+});
+$('deleteContact').addEventListener('click', () => {
+  const idx = $('savedContact').value;
+  if (idx === '' || !savedContacts[+idx]) return;
+  savedContacts.splice(+idx, 1);
+  saveContacts();
+  renderContactsSelect();
+});
+
+// Initial subtitle list render + +Add wiring
+renderSubtitleList();
+$('subtitleAdd').addEventListener('click', () => {
+  subtitles.push({ enabled: true, text: '', url: '' });
+  saveSubtitles();
+  renderSubtitleList();
+  update();
+  // Focus the text input of the newly-added row
+  const rows = $('subtitleList').querySelectorAll('.subtitle-row .sub-text');
+  if (rows.length) rows[rows.length - 1].focus();
+});
+
 update();
 
 $('copyBtn').addEventListener('click', async () => {
-  const html = render();
+  $('copyBtn').textContent = 'Embedding photo…';
+  const html = await renderForCopy();
+  const sizeKB = Math.round(new Blob([html]).size / 102.4) / 10;
   try {
     await navigator.clipboard.write([
       new ClipboardItem({
@@ -292,8 +1040,8 @@ $('copyBtn').addEventListener('click', async () => {
         'text/plain': new Blob([html], { type: 'text/plain' }),
       })
     ]);
-    $('copyBtn').textContent = 'Copied! Paste into Gmail';
-    setTimeout(() => $('copyBtn').textContent = 'Copy HTML', 2200);
+    $('copyBtn').textContent = `Copied (${sizeKB}KB)! Paste into Gmail`;
+    setTimeout(() => $('copyBtn').textContent = 'Copy HTML', 2800);
   } catch (err) {
     await navigator.clipboard.writeText(html);
     $('copyBtn').textContent = 'Copied HTML source';
@@ -301,9 +1049,9 @@ $('copyBtn').addEventListener('click', async () => {
   }
 });
 
-$('downloadBtn').addEventListener('click', () => {
+$('downloadBtn').addEventListener('click', async () => {
   const slug = ($('fullName').value || 'signature').toLowerCase().replace(/\s+/g, '-');
-  const blob = new Blob([render()], { type: 'text/html' });
+  const blob = new Blob([await renderForCopy()], { type: 'text/html' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url; a.download = `${slug}.html`; a.click();
