@@ -1386,6 +1386,8 @@ function update() {
     setHidden(new Set());
     update();
   });
+  // Keep the copy-cache fresh so Copy HTML is instant + sync within gesture.
+  refreshCopyCache();
 }
 document.querySelectorAll('input, select, textarea').forEach(el => el.addEventListener('input', update));
 document.querySelectorAll('input[type="checkbox"]').forEach(el => el.addEventListener('change', update));
@@ -1482,37 +1484,67 @@ $('subtitleAdd').addEventListener('click', () => {
 
 update();
 
+// Pre-rendered HTML cache: render-for-copy runs async (fetch + canvas to
+// embed the photo as base64). Chrome refuses clipboard.write() if there's
+// an await between the click and the call. Solution: keep an always-fresh
+// cache that update() refreshes in the background, so the click handler
+// can do clipboard.write synchronously inside the user gesture.
+let _copyHtmlCache = '';
+let _copyEmbedRunning = false;
+let _copyEmbedDirty = false;
+async function refreshCopyCache() {
+  if (_copyEmbedRunning) { _copyEmbedDirty = true; return; }
+  _copyEmbedRunning = true;
+  try {
+    _copyHtmlCache = await renderForCopy();
+  } catch (e) {
+    // If embed fails (e.g. CORS, fetch error), fall back to non-embedded HTML.
+    try { _copyHtmlCache = render(); } catch {}
+    console.warn('copy cache embed failed, using URL-based html', e);
+  } finally {
+    _copyEmbedRunning = false;
+    if (_copyEmbedDirty) { _copyEmbedDirty = false; refreshCopyCache(); }
+  }
+}
+
 $('copyBtn').addEventListener('click', () => {
-  // Chrome invalidates the clipboard user-gesture if there's an `await`
-  // between the click and `navigator.clipboard.write()`. The fix: pass
-  // Promise-wrapped Blobs into ClipboardItem — Chrome handles the async
-  // resolution internally without losing the gesture.
-  $('copyBtn').textContent = 'Embedding photo…';
-  const htmlP = renderForCopy();
-  const htmlBlobP = htmlP.then(html => new Blob([html], { type: 'text/html' }));
-  const textBlobP = htmlP.then(html => new Blob([html], { type: 'text/plain' }));
+  // Use cached HTML if available, fall back to a synchronous render.
+  // Either way, we have a string in hand BEFORE calling clipboard APIs.
+  const html = _copyHtmlCache || render();
   const restoreBtn = (label, ms) => {
     $('copyBtn').textContent = label;
     setTimeout(() => $('copyBtn').textContent = 'Copy HTML', ms);
   };
-  navigator.clipboard.write([
-    new ClipboardItem({ 'text/html': htmlBlobP, 'text/plain': textBlobP })
-  ]).then(async () => {
-    const html = await htmlP;
-    const sizeKB = Math.round(new Blob([html]).size / 102.4) / 10;
-    restoreBtn(`Copied (${sizeKB}KB)! Paste into Gmail`, 2800);
-  }).catch(async () => {
-    // Fallback: writeText with plain HTML source. Works even when
-    // ClipboardItem isn't supported (older browsers / Safari quirks).
-    try {
-      const html = await htmlP;
-      await navigator.clipboard.writeText(html);
+  // Build the Blobs synchronously. ClipboardItem must receive a Blob (or
+  // Promise<Blob>) but synchronous Blobs are the most compatible path.
+  try {
+    navigator.clipboard.write([
+      new ClipboardItem({
+        'text/html': new Blob([html], { type: 'text/html' }),
+        'text/plain': new Blob([html], { type: 'text/plain' }),
+      }),
+    ]).then(() => {
+      const sizeKB = Math.round(new Blob([html]).size / 102.4) / 10;
+      restoreBtn(`Copied (${sizeKB}KB)! Paste into Gmail`, 2800);
+    }).catch((e) => {
+      // Fallback: writeText with the same HTML. Gmail typically still
+      // accepts HTML pasted via writeText for signatures.
+      navigator.clipboard.writeText(html).then(() => {
+        restoreBtn('Copied HTML source', 2200);
+      }).catch((e2) => {
+        restoreBtn('Copy failed — see console', 2800);
+        console.error('clipboard.write failed:', e, '; writeText also failed:', e2);
+      });
+    });
+  } catch (e) {
+    // ClipboardItem constructor unsupported (very old browsers)
+    navigator.clipboard.writeText(html).then(() => {
       restoreBtn('Copied HTML source', 2200);
-    } catch (e) {
+    }).catch((e2) => {
       restoreBtn('Copy failed — see console', 2800);
-      console.error('clipboard write failed:', e);
-    }
-  });
+      console.error('ClipboardItem unsupported:', e, '; writeText failed:', e2);
+    });
+  }
 });
 
 $('downloadBtn').addEventListener('click', async () => {
