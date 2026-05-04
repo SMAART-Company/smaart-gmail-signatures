@@ -49,6 +49,14 @@
   .variant-delete:hover { background: #FEF2F2; color: #B91C1C; border-color: #FCA5A5; }
   .variant-restore { display: block; width: 100%; background: transparent; color: var(--muted); border: 1px dashed var(--line); padding: 8px; font-size: 11px; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 600; font-family: inherit; }
   .variant-restore:hover { color: var(--navy); border-color: var(--navy); }
+  .variant-clone { background: transparent; color: var(--muted); border: 1px solid var(--line); padding: 4px 9px; font-size: 11px; font-weight: 600; border-radius: 6px; cursor: pointer; margin-left: 6px; font-family: inherit; text-transform: uppercase; letter-spacing: 0.4px; }
+  .variant-clone:hover { color: var(--navy); border-color: var(--navy); background: #F8FAFC; }
+  .variant-card.clone { border-left: 3px solid var(--green); }
+  .variant-card.clone .variant-head { background: #F1FAF2; }
+  .clone-overrides { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 14px; background: #FAFBFC; border-bottom: 1px solid var(--line); font-size: 11px; align-items: center; }
+  .clone-overrides label { display: flex; align-items: center; gap: 4px; margin: 0; text-transform: none; letter-spacing: 0; font-size: 11px; font-weight: 500; color: var(--ink); }
+  .clone-overrides select { width: auto; padding: 3px 6px; font-size: 11px; }
+  .clone-overrides input[type="checkbox"] { margin: 0 3px 0 0; }
   .subtitle-row { display: flex; align-items: center; gap: 6px; margin: 6px 0; }
   .subtitle-row input[type="checkbox"] { flex: 0 0 auto; margin-right: 2px; }
   .subtitle-row input.sub-text { flex: 1 1 auto; min-width: 0; padding: 6px 9px; }
@@ -57,6 +65,15 @@
   .subtitle-row button.sub-delete:hover { background: #FEF2F2; color: #B91C1C; border-color: #FCA5A5; }
   .subtitle-add { margin-top: 6px; background: transparent; color: var(--navy); border: 1px dashed var(--navy); padding: 7px 12px; font-size: 11px; font-weight: 600; border-radius: 6px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.4px; font-family: inherit; width: 100%; }
   .subtitle-add:hover { background: var(--navy); color: #fff; }
+  .pdf-row { background: #FAFBFC; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin: 8px 0; }
+  .pdf-row-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .pdf-row-head input[type="checkbox"] { margin: 0; }
+  .pdf-row-head .pdf-title-preview { flex: 1 1 auto; font-size: 12px; font-weight: 600; color: var(--navy); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pdf-row-head button.pdf-delete { flex: 0 0 auto; background: transparent; border: 1px solid var(--line); color: #8A8A8A; width: 26px; height: 26px; border-radius: 6px; cursor: pointer; padding: 0; font-size: 16px; line-height: 1; font-family: inherit; }
+  .pdf-row-head button.pdf-delete:hover { background: #FEF2F2; color: #B91C1C; border-color: #FCA5A5; }
+  .pdf-row .pdf-field { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; color: var(--muted); font-weight: 600; margin: 6px 0 3px; }
+  .pdf-row input, .pdf-row select { font-size: 13px; padding: 6px 9px; }
+  .pdf-row-two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .variant-body { padding: 20px; }
   .preview-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); margin-bottom: 12px; }
   .note { font-size: 12px; color: var(--muted); margin-top: 14px; line-height: 1.5; }
@@ -76,6 +93,9 @@
     <select id="layout">
       <option value="classic" selected>Classic — photo, info, logo right-corner</option>
       <option value="branded">Branded header — small logo above name</option>
+      <option value="credentials">Credentials — Branded + dedicated subtitle row before disclaimer</option>
+      <option value="credentials-blue">Credentials Blue — navy credentials block with frosted-glass subtitle panel</option>
+      <option value="credentials-dropdown">Drop Down Credentials — native collapsible (click to expand)</option>
       <option value="designer">Designer card — large photo, cursive name, right sidebar</option>
       <option value="triptych">Triptych — three sections: identity · contact · branding</option>
       <option value="banner">Banner — two-row card with navy bottom bar</option>
@@ -155,13 +175,21 @@
     <textarea id="address" rows="2" placeholder="2319 N Andrews Avenue&#10;Fort Lauderdale, FL 33311">2319 N. Andres Avenue
 Fort Lauderdale, FL 33311</textarea>
 
-    <label for="bookSlug">Accent image <span class="hint">optional — book cover or award, shows right of signature in Classic / Designer</span></label>
-    <select id="bookSlug">
-      <option value="" selected>— none —</option>
-      <option value="ray-young-business">Ray Dominguez — "Young Business"</option>
+    <label class="toggle" style="margin-top:10px;"><input type="checkbox" id="showQuote" />Show quote below socials <span class="hint">appears on the right to balance the photo/book column on the left (Credentials layout)</span></label>
+    <label for="quoteText">Quote</label>
+    <input id="quoteText" value="" placeholder="&quot;Success is not final, failure is not fatal.&quot;" />
+    <label for="quoteAuthor">Quote author <span class="hint">optional</span></label>
+    <input id="quoteAuthor" value="" placeholder="— Winston Churchill" />
+    <label for="quoteBg">Quote background</label>
+    <select id="quoteBg">
+      <option value="gray" selected>Soft gray</option>
+      <option value="white">White</option>
     </select>
-    <label for="bookUrl">Accent image link <span class="hint">optional — where the cover clicks through to</span></label>
-    <input id="bookUrl" value="" placeholder="https://www.amazon.com/..." />
+
+    <h2 style="margin-top:22px;">Add PDF <span class="hint">one card per publication, stacks under the photo</span></h2>
+    <label class="toggle"><input type="checkbox" id="showAuthorCard" checked />Show PDF card(s) under the photo (Branded header)</label>
+    <div id="pdfList"></div>
+    <button type="button" class="subtitle-add" id="pdfAdd">+ Add PDF</button>
 
     <h2 style="margin-top:22px;">Social links</h2>
     <label for="linkedin">LinkedIn</label>
@@ -224,7 +252,7 @@ const $ = (id) => document.getElementById(id);
 const IS_LOCAL = ['localhost', '127.0.0.1', '0.0.0.0'].includes(location.hostname);
 
 function render(opts = {}) {
-  const { forPreview = false } = opts;
+  const { forPreview = false, overrides = {} } = opts;
   const typedBase = $('assetBase').value.replace(/\/+$/, '');
   const effectiveBase = (forPreview && IS_LOCAL) ? location.origin : typedBase;
   // Cache-buster for Gmail's image proxy (ci3.googleusercontent.com). The
@@ -249,8 +277,11 @@ function render(opts = {}) {
     WEBSITE_TEXT: $('websiteText').value.trim(),
     WEBSITE_URL: $('websiteUrl').value.trim(),
     ADDRESS: $('address').value,
-    BOOK_SLUG: $('bookSlug').value,
-    BOOK_URL: $('bookUrl').value.trim(),
+    SHOW_AUTHOR_CARD: $('showAuthorCard').checked,
+    SHOW_QUOTE: $('showQuote').checked,
+    QUOTE_TEXT: $('quoteText').value.trim(),
+    QUOTE_AUTHOR: $('quoteAuthor').value.trim(),
+    QUOTE_BG: $('quoteBg').value,
     LINKEDIN_URL: $('linkedin').value,
     FACEBOOK_URL: $('facebook').value,
     INSTAGRAM_URL: $('instagram').value,
@@ -264,7 +295,11 @@ function render(opts = {}) {
     SHOW_DISCLAIMER: $('showDisclaimer').checked,
     DISCLAIMER_OUTSIDE: $('disclaimerOutside').checked,
     DISCLAIMER: $('disclaimer').value.trim(),
+    BAR_COLOR: $('barColor').value,
   };
+  // Per-card overrides (set by clones in the gallery) replace global values.
+  // Only whitelisted keys get overridden; everything else stays global.
+  if (overrides && Object.keys(overrides).length) Object.assign(v, overrides);
 
   const fullName = v.FULL_NAME || 'Your Name';
 
@@ -384,8 +419,51 @@ function render(opts = {}) {
     const shiftX = Math.round((imgNatural - size) / 2);
     return `<div style="display:inline-block;width:${size}px;height:${size}px;border-radius:${radius};overflow:hidden;line-height:0;"><img src="${v.ASSET_BASE}/team-images/${v.PHOTO_SLUG}.jpg${cacheBust}" width="${imgNatural}" height="${imgNatural}" alt="${esc(alt)}" style="display:block;width:${imgNatural}px;height:${imgNatural}px;margin:-${shiftY}px 0 0 -${shiftX}px;border:0;" /></div>`;
   };
-  const photoCell = v.PHOTO_SLUG
-    ? `<td style="padding:0 20px 0 0;vertical-align:top;">${framedPhoto(v.PHOTO_SIZE, photoRadius, fullName)}</td>`
+
+  // Author cards must be defined BEFORE photoCell since photoCell references them.
+  const authorCardsHtml = (() => {
+    if (!v.SHOW_AUTHOR_CARD) return '';
+    const entries = (typeof pdfList !== 'undefined' ? pdfList : [])
+      .filter(p => p.enabled && p.slug);
+    if (!entries.length) return '';
+    const W = Math.max(140, v.PHOTO_SIZE);
+    const coverW = Math.min(54, Math.max(36, Math.round(W * 0.3)));
+    const coverH = Math.round(coverW * 1.48);
+    return entries.map(p => {
+      const label = esc(p.label || '');
+      const title = esc(p.title || '');
+      const hook = esc(p.hook || '');
+      const cover = `<img src="${v.ASSET_BASE}/books/${p.slug}.jpg${cacheBust}" alt="${title || 'Cover'}" width="${coverW}" height="${coverH}" style="display:block;width:${coverW}px;height:${coverH}px;border:0;" />`;
+      const inner = `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;width:100%;">
+        <tr>
+          <td style="padding:0;vertical-align:middle;width:${coverW}px;">${cover}</td>
+          <td style="padding:6px 9px 6px 10px;vertical-align:middle;">
+            ${label ? `<div style="font-family:Arial,Helvetica,sans-serif;font-size:9px;color:#6B7280;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:1px;font-weight:700;">${label}</div>` : ''}
+            ${title ? `<div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:700;color:#0D004C;line-height:1.2;letter-spacing:0.2px;">${title}</div>` : ''}
+            ${hook ? `<div style="font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:10px;color:#4A4A4A;margin-top:2px;line-height:1.35;">${hook}</div>` : ''}
+          </td>
+        </tr>
+      </table>`;
+      // Subtle off-white bg so the card reads as a distinct "floating" unit
+      // in email clients that strip box-shadow (Gmail does). Shadow stays for
+      // clients that support it (Apple Mail, Outlook.com).
+      const card = `<div style="margin-top:10px;background:#F7F8FA;border-radius:8px;overflow:hidden;width:${W}px;box-shadow:0 2px 8px rgba(13,0,76,0.08);">${inner}</div>`;
+      return p.url ? `<a href="${esc(p.url)}" style="text-decoration:none;color:inherit;display:block;">${card}</a>` : card;
+    }).join('');
+  })();
+
+  // Gmail reliably vertically-centers table-cell CONTENT only when: (1) the
+  // legacy HTML valign="middle" attribute is on the td (CSS alone is often
+  // ignored by Gmail's signature sanitizer); (2) the content is a single
+  // nested table that Gmail treats as one atomic block. The nested-table
+  // pattern is the email-safe bulletproof way to do this.
+  const photoInner = v.PHOTO_SLUG
+    ? (authorCardsHtml
+        ? `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;"><tr><td style="padding:0;">${framedPhoto(v.PHOTO_SIZE, photoRadius, fullName)}</td></tr><tr><td style="padding:0;">${authorCardsHtml}</td></tr></table>`
+        : framedPhoto(v.PHOTO_SIZE, photoRadius, fullName))
+    : (authorCardsHtml || '');
+  const photoCell = photoInner
+    ? `<td valign="middle" style="padding:0 20px 0 0;vertical-align:middle;">${photoInner}</td>`
     : '';
 
   // Contact block — two styles: stacked with T:/E: labels, or inline with middot.
@@ -439,18 +517,9 @@ function render(opts = {}) {
     ? `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-top:12px;border-collapse:collapse;"><tr>${socialCells}</tr></table>`
     : '';
 
-  // Accent image (book cover / award) — optional portrait image rendered as a
-  // right-side cell on layouts that support it. 100px tall, preserves aspect.
-  const bookHeight = 100;
-  const bookImg = v.BOOK_SLUG
-    ? `<img src="${v.ASSET_BASE}/books/${v.BOOK_SLUG}.jpg${cacheBust}" alt="Book cover" height="${bookHeight}" style="display:block;height:${bookHeight}px;border:0;border-radius:4px;" />`
-    : '';
-  const bookLink = v.BOOK_SLUG
-    ? (v.BOOK_URL ? `<a href="${esc(v.BOOK_URL)}" style="text-decoration:none;">${bookImg}</a>` : bookImg)
-    : '';
-  const bookCell = v.BOOK_SLUG
-    ? `<td style="vertical-align:top;padding:0 16px 0 0;">${bookLink}</td>`
-    : '';
+  // bookCell kept as empty so old template references still compile — author
+  // cards now live under the photo via framedPhoto-adjacent HTML.
+  const bookCell = '';
 
   // SMAART logo — top-right corner cell. Small (28px) so it reads as a brand
   // mark inside the Card-mode frame without competing with the photo + name.
@@ -458,11 +527,10 @@ function render(opts = {}) {
     ? `<td style="vertical-align:top;padding:0 0 0 24px;text-align:right;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="28" style="display:block;height:28px;border:0;margin-left:auto;" /></a></td>`
     : '';
 
-  // Disclaimer — gray box rendered AFTER the main table (not inside the right
-  // cell) so the green bar only runs the height of the photo. Disclaimer sits
-  // below the card, framed by the signature above it.
+  // Disclaimer — borderless subtle floating card. Soft shadow for depth,
+  // no outline so it reads as a light, un-obtrusive note below the signature.
   const disclaimerBlock = (v.SHOW_DISCLAIMER && v.DISCLAIMER)
-    ? `<div style="margin-top:14px;padding:12px 14px;background:#F5F6F8;border:1px solid #E5E7EB;border-radius:8px;font-size:11px;color:#6B7280;line-height:1.5;max-width:620px;">${esc(v.DISCLAIMER).replace(/\n/g, '<br />')}</div>`
+    ? `<div style="margin-top:14px;padding:12px 14px;background:#F7F8FA;border-radius:8px;font-size:11px;color:#6B7280;line-height:1.5;max-width:620px;box-shadow:0 2px 6px rgba(13,0,76,0.05);">${esc(v.DISCLAIMER).replace(/\n/g, '<br />')}</div>`
     : '';
 
   // Outlined social row — pure CSS, no image files. Shape per brand mirrors
@@ -488,17 +556,20 @@ function render(opts = {}) {
     return `<div style="margin-top:10px;">${links}</div>`;
   })() : '';
 
-  // Card-mode wrapper — rounded, shadowed container around the whole signature.
+  // Outer wrapper — always caps the signature at 620px so every layout is
+  // the same width as the disclaimer box below (or inside) it. Card-mode
+  // adds rounded/shadowed styling on top; disclaimer box also has its own
+  // max-width:620px, so placing it outside the wrapper stays aligned.
   const cardOpen = v.CARD_MODE
-    ? `<div style="display:inline-block;padding:22px 26px;background:#FFFFFF;border:1px solid #E5E7EB;border-radius:12px;box-shadow:0 1px 4px rgba(13,0,76,0.08);font-family:Arial,Helvetica,sans-serif;">`
-    : '';
-  const cardClose = v.CARD_MODE ? `</div>` : '';
+    ? `<div style="display:inline-block;max-width:620px;padding:22px 26px;background:#FFFFFF;border:1px solid #E5E7EB;border-radius:12px;box-shadow:0 1px 4px rgba(13,0,76,0.08);font-family:Arial,Helvetica,sans-serif;">`
+    : `<div style="display:inline-block;max-width:620px;font-family:Arial,Helvetica,sans-serif;">`;
+  const cardClose = `</div>`;
   // Disclaimer placement: inside the card (default) or below it (toggle).
   // When card mode is off, both render identically — the wrappers are empty.
   const discInside  = v.DISCLAIMER_OUTSIDE ? '' : disclaimerBlock;
   const discOutside = v.DISCLAIMER_OUTSIDE ? disclaimerBlock : '';
 
-  const barHex = $('barColor').value === 'navy' ? '#0D004C' : '#39B54A';
+  const barHex = v.BAR_COLOR === 'navy' ? '#0D004C' : '#39B54A';
   const rightCellStyle = v.SHOW_BAR
     ? `vertical-align:top;border-left:3px solid ${barHex};padding:0 0 0 18px;`
     : 'vertical-align:top;padding:0;';
@@ -543,15 +614,195 @@ function render(opts = {}) {
     return `${cardOpen}${minBody}${discInside}${cardClose}${discOutside}`;
   }
 
+  if (layout === 'credentials-dropdown') {
+    // Native <details>/<summary> so the credential row collapses by default
+    // and expands when the recipient clicks. No JavaScript — Gmail web,
+    // Apple Mail, and Outlook.com all support it. On clients that strip
+    // <details> (older Outlook desktop), the content still shows below the
+    // summary text, so nothing is lost.
+    const cdLogo = v.SHOW_LOGO
+      ? `<div style="margin-bottom:6px;line-height:0;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="20" style="display:block;height:20px;border:0;" /></a></div>`
+      : '';
+    const cdPrimary = parsedFromTextarea[0];
+    const cdPrimaryText = cdPrimary
+      ? (cdPrimary.url
+          ? `<a href="${esc(cdPrimary.url)}" style="font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:14px;color:#0D004C;font-weight:500;letter-spacing:0.3px;text-decoration:none;">${esc(cdPrimary.text)}</a>`
+          : `<span style="font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:14px;color:#0D004C;font-weight:500;letter-spacing:0.3px;">${esc(cdPrimary.text)}</span>`)
+      : '';
+    const cdCompanyTail = v.SHOW_COMPANY
+      ? `<span style="color:#8A8A8A;font-family:Georgia,'Times New Roman',serif;font-size:12px;font-style:italic;font-weight:400;margin-left:4px;">— SMAART Company</span>`
+      : '';
+    const cdTitleBlock = `<div style="margin:4px 0 12px 0;line-height:1.4;">${cdPrimaryText}${cdCompanyTail}</div>`;
+
+    // Dropdown lives inside the content column, right after the title.
+    // No outlines — just soft gray backgrounds create the card definition.
+    const cdEntries = parsedFromList;
+    const cdChipStyle = `display:inline-block;background:#FFFFFF;color:#6B7280;font-family:Arial,Helvetica,sans-serif;font-size:10px;font-weight:500;padding:3px 10px;border-radius:999px;margin:3px 4px 3px 0;letter-spacing:0.15px;`;
+    // "Credentials" heading — works as collapse trigger in Apple Mail/iOS
+    // Mail/Outlook.com; degrades to a clean static heading in Gmail (which
+    // strips <details> interactivity but preserves the text and pills below).
+    const cdSummary = `<summary style="cursor:pointer;padding:7px 12px;background:#F1F3F6;border-radius:8px;font-family:Arial,Helvetica,sans-serif;font-size:10px;font-weight:500;color:#0D004C;letter-spacing:1.4px;text-transform:uppercase;outline:none;display:inline-block;">Credentials <span style="color:#6B7280;font-weight:400;text-transform:none;letter-spacing:0;font-size:10px;margin-left:6px;">(${cdEntries.length})</span></summary>`;
+    const cdPillsPanel = `<div style="margin-top:6px;padding:10px 12px;background:#F7F8FA;border-radius:8px;line-height:1.9;">${cdEntries.map(p => p.url
+      ? `<a href="${esc(p.url)}" style="${cdChipStyle}text-decoration:none;">${esc(p.text)}</a>`
+      : `<span style="${cdChipStyle}">${esc(p.text)}</span>`).join('')}</div>`;
+    const cdCredentialRow = cdEntries.length
+      ? `<details style="margin:4px 0 12px 0;">${cdSummary}${cdPillsPanel}</details>`
+      : '';
+
+    const credentialsDropdownBody = `${tableOpen}
+      <tr>
+        ${photoCell}
+        <td style="${rightCellStyle}">
+          ${cdLogo}
+          ${nameLine}
+          ${cdTitleBlock}
+          ${cdCredentialRow}
+          ${contactBlock}
+          ${websiteBlock}
+          ${addressBlock}
+          ${socialRow}
+        </td>
+      </tr>
+    </table>`;
+    // Uses the global disclaimerBlock (subtle gray, no outline, soft shadow)
+    return `${cardOpen}${credentialsDropdownBody}${discInside}${cardClose}${discOutside}`;
+  }
+
+  if (layout === 'credentials-blue') {
+    // Same skeleton as Credentials but the credential row becomes a navy
+    // container, with the pills sitting inside a frosted-glass inner panel
+    // (semi-transparent white bg + thin light border on the navy field).
+    // Readable in Gmail — rgba colors are email-safe; no backdrop-filter.
+    const cbLogo = v.SHOW_LOGO
+      ? `<div style="margin-bottom:6px;line-height:0;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="20" style="display:block;height:20px;border:0;" /></a></div>`
+      : '';
+    const cbPrimary = parsedFromTextarea[0];
+    const cbPrimaryText = cbPrimary
+      ? (cbPrimary.url
+          ? `<a href="${esc(cbPrimary.url)}" style="font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:14px;color:#0D004C;font-weight:500;letter-spacing:0.3px;text-decoration:none;">${esc(cbPrimary.text)}</a>`
+          : `<span style="font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:14px;color:#0D004C;font-weight:500;letter-spacing:0.3px;">${esc(cbPrimary.text)}</span>`)
+      : '';
+    const cbCompanyTail = v.SHOW_COMPANY
+      ? `<span style="color:#8A8A8A;font-family:Georgia,'Times New Roman',serif;font-size:12px;font-style:italic;font-weight:400;margin-left:4px;">— SMAART Company</span>`
+      : '';
+    const cbTitleBlock = `<div style="margin:4px 0 12px 0;line-height:1.4;">${cbPrimaryText}${cbCompanyTail}</div>`;
+
+    const cbEntries = parsedFromList;
+    const cbPillStyle = `display:inline-block;background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.22);color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;font-size:10px;font-weight:500;padding:3px 10px;border-radius:999px;margin:3px 4px 3px 0;letter-spacing:0.2px;`;
+    const cbCredentialRow = cbEntries.length
+      ? `<div style="margin:14px 0 0 0;padding:16px 18px;background:#0D004C;border-radius:12px;max-width:620px;">
+          <div style="font-family:Arial,Helvetica,sans-serif;font-size:9px;color:rgba(255,255,255,0.55);text-transform:uppercase;letter-spacing:1.8px;margin-bottom:10px;font-weight:500;">Credentials</div>
+          <div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);border-radius:10px;padding:10px 12px;line-height:1.9;">${cbEntries.map(p => p.url
+            ? `<a href="${esc(p.url)}" style="${cbPillStyle}text-decoration:none;">${esc(p.text)}</a>`
+            : `<span style="${cbPillStyle}">${esc(p.text)}</span>`).join('')}</div>
+        </div>`
+      : '';
+
+    const credentialsBlueBody = `${tableOpen}
+      <tr>
+        ${photoCell}
+        <td style="${rightCellStyle}">
+          ${cbLogo}
+          ${nameLine}
+          ${cbTitleBlock}
+          ${contactBlock}
+          ${websiteBlock}
+          ${addressBlock}
+          ${socialRow}
+        </td>
+      </tr>
+    </table>${cbCredentialRow}`;
+    // Use the global light-gray disclaimer (subtle shadow, no outline) so it
+    // contrasts nicely with the navy credentials block above.
+    return `${cardOpen}${credentialsBlueBody}${discInside}${cardClose}${discOutside}`;
+  }
+
+  if (layout === 'credentials') {
+    // Same structural bones as Branded header, but the subtitle list moves
+    // out of the content column into its own dedicated row between socials
+    // and disclaimer. Each subtitle is a small floating white pill with a
+    // soft shadow — reads as a credential showcase.
+    const credLogo = v.SHOW_LOGO
+      ? `<div style="margin-bottom:6px;line-height:0;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="20" style="display:block;height:20px;border:0;" /></a></div>`
+      : '';
+    // Primary title only (first textarea line) — elegant italic serif. List
+    // subtitles are excluded from the main content column and render below.
+    const primaryOnly = parsedFromTextarea[0];
+    const primaryColor = '#0D004C';
+    const primaryText = primaryOnly
+      ? (primaryOnly.url
+          ? `<a href="${esc(primaryOnly.url)}" style="font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:14px;color:${primaryColor};font-weight:500;letter-spacing:0.3px;text-decoration:none;">${esc(primaryOnly.text)}</a>`
+          : `<span style="font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:14px;color:${primaryColor};font-weight:500;letter-spacing:0.3px;">${esc(primaryOnly.text)}</span>`)
+      : '';
+    const credCompanyTail = v.SHOW_COMPANY
+      ? `<span style="color:#8A8A8A;font-family:Georgia,'Times New Roman',serif;font-size:12px;font-style:italic;font-weight:400;margin-left:4px;">— SMAART Company</span>`
+      : '';
+    const credTitleBlock = `<div style="margin:4px 0 12px 0;line-height:1.4;">${primaryText}${credCompanyTail}</div>`;
+
+    // Dedicated credential row — light-gray container (no outline), navy
+    // "CREDENTIALS" heading, subtle pills inside.
+    const credEntries = parsedFromList;
+    const credChipStyle = `display:inline-block;background:#FFFFFF;color:#6B7280;font-family:Arial,Helvetica,sans-serif;font-size:10px;font-weight:500;padding:3px 10px;border-radius:999px;margin:3px 4px 3px 0;letter-spacing:0.15px;`;
+    const credentialRow = credEntries.length
+      ? `<div style="margin:14px 0 0 0;padding:12px 14px;background:#F5F6F8;border-radius:10px;max-width:620px;">
+          <div style="font-family:Arial,Helvetica,sans-serif;font-size:10px;color:#0D004C;text-transform:uppercase;letter-spacing:1.8px;margin-bottom:8px;font-weight:700;">Credentials</div>
+          <div style="line-height:1.9;">${credEntries.map(p => p.url
+            ? `<a href="${esc(p.url)}" style="${credChipStyle}text-decoration:none;">${esc(p.text)}</a>`
+            : `<span style="${credChipStyle}">${esc(p.text)}</span>`).join('')}</div>
+        </div>`
+      : '';
+
+    // Quote card — optional, rendered below the socials on the right side
+    // to balance the photo/book column on the left. Uses the same soft-gray
+    // treatment as the book card so the two halves feel symmetric.
+    const quoteW = Math.max(180, v.PHOTO_SIZE + 20);
+    const quoteBgColor = v.QUOTE_BG === 'white' ? '#FFFFFF' : '#F7F8FA';
+    const quoteCard = (v.SHOW_QUOTE && v.QUOTE_TEXT)
+      ? `<div style="margin-top:12px;padding:10px 14px;background:${quoteBgColor};border-radius:8px;width:${quoteW}px;max-width:100%;box-sizing:border-box;box-shadow:0 1px 3px rgba(13,0,76,0.05);">
+          <span style="font-family:Georgia,'Times New Roman',serif;font-size:24px;color:#C8CDD6;line-height:0;vertical-align:-6px;margin-right:2px;">&ldquo;</span><span style="font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:11px;color:#4A4A4A;line-height:1.5;">${esc(v.QUOTE_TEXT)}</span>
+          ${v.QUOTE_AUTHOR ? `<div style="margin-top:4px;font-family:Arial,Helvetica,sans-serif;font-size:9px;color:#6B7280;text-align:right;letter-spacing:0.2px;">${esc(v.QUOTE_AUTHOR)}</div>` : ''}
+        </div>`
+      : '';
+
+    // Credentials-layout-specific disclaimer — navy background, light text.
+    // Bold visual contrast with the light-gray credentials block above.
+    const credDisclaimerBlock = (v.SHOW_DISCLAIMER && v.DISCLAIMER)
+      ? `<div style="margin-top:14px;padding:12px 14px;background:#0D004C;border-radius:10px;font-size:11px;color:rgba(255,255,255,0.72);line-height:1.5;max-width:620px;">${esc(v.DISCLAIMER).replace(/\n/g, '<br />')}</div>`
+      : '';
+    const credDiscInside = v.DISCLAIMER_OUTSIDE ? '' : credDisclaimerBlock;
+    const credDiscOutside = v.DISCLAIMER_OUTSIDE ? credDisclaimerBlock : '';
+
+    const credentialsBody = `${tableOpen}
+      <tr>
+        ${photoCell}
+        <td style="${rightCellStyle}">
+          ${credLogo}
+          ${nameLine}
+          ${credTitleBlock}
+          ${contactBlock}
+          ${websiteBlock}
+          ${addressBlock}
+          ${socialRow}
+          ${quoteCard}
+        </td>
+      </tr>
+    </table>${credentialRow}`;
+    return `${cardOpen}${credentialsBody}${credDiscInside}${cardClose}${credDiscOutside}`;
+  }
+
   if (layout === 'branded') {
     // Small SMAART logo above the name, no right-corner logo. Keeps proportions
     // tight — logo ~20px feels like a brand mark, subordinate to the 18px name.
     const brandedLogo = v.SHOW_LOGO
       ? `<div style="margin-bottom:6px;line-height:0;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="20" style="display:block;height:20px;border:0;" /></a></div>`
       : '';
+    // Branded: photo cell stacks any PDF cards below the photo.
+    const brandedPhotoCell = v.PHOTO_SLUG
+      ? `<td style="padding:0 20px 0 0;vertical-align:top;">${framedPhoto(v.PHOTO_SIZE, photoRadius, fullName)}${authorCardsHtml}</td>`
+      : (authorCardsHtml ? `<td style="padding:0 20px 0 0;vertical-align:top;">${authorCardsHtml}</td>` : '');
     const brandedBody = `${tableOpen}
       <tr>
-        ${photoCell}
+        ${brandedPhotoCell}
         <td style="${rightCellStyle}">
           ${brandedLogo}
           ${nameLine}
@@ -561,7 +812,6 @@ function render(opts = {}) {
           ${addressBlock}
           ${socialRow}
         </td>
-        ${bookCell}
       </tr>
     </table>`;
     return `${cardOpen}${brandedBody}${discInside}${cardClose}${discOutside}`;
@@ -574,9 +824,25 @@ function render(opts = {}) {
     // signatures. Cursive font stack degrades to italic on clients without it.
     const big = Math.max(150, Math.round(v.PHOTO_SIZE * 1.7));
     const designerRadius = v.PHOTO_SHAPE === 'squared' ? '10px' : `${big}px`;
-    const designerPhotoCell = v.PHOTO_SLUG
-      ? `<td style="padding:0 22px 0 0;vertical-align:top;">${framedPhoto(big, designerRadius, fullName)}</td>`
+    // Designer card uses a bigger photo + stacks PDF cards directly below it.
+    // Override cover/card width to match the designer photo size so they line
+    // up visually with the enlarged photo.
+    const designerAuthorCards = v.SHOW_AUTHOR_CARD && pdfList && pdfList.some(p => p.enabled && p.slug)
+      ? pdfList.filter(p => p.enabled && p.slug).map(p => {
+          const coverW = Math.min(60, Math.max(42, Math.round(big * 0.3)));
+          const coverH = Math.round(coverW * 1.48);
+          const label = esc(p.label || '');
+          const title = esc(p.title || '');
+          const hook = esc(p.hook || '');
+          const cover = `<img src="${v.ASSET_BASE}/books/${p.slug}.jpg${cacheBust}" alt="${title || 'Cover'}" width="${coverW}" height="${coverH}" style="display:block;width:${coverW}px;height:${coverH}px;border:0;" />`;
+          const inner = `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;width:100%;"><tr><td style="padding:0;vertical-align:middle;width:${coverW}px;">${cover}</td><td style="padding:7px 10px 7px 12px;vertical-align:middle;">${label ? `<div style="font-family:Arial,Helvetica,sans-serif;font-size:9px;color:#6B7280;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:1px;font-weight:700;">${label}</div>` : ''}${title ? `<div style="font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:700;color:#0D004C;line-height:1.2;letter-spacing:0.2px;">${title}</div>` : ''}${hook ? `<div style="font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:10px;color:#4A4A4A;margin-top:2px;line-height:1.35;">${hook}</div>` : ''}</td></tr></table>`;
+          const card = `<div style="margin-top:10px;background:#F7F8FA;border-radius:8px;overflow:hidden;width:${big}px;box-shadow:0 2px 8px rgba(13,0,76,0.08);">${inner}</div>`;
+          return p.url ? `<a href="${esc(p.url)}" style="text-decoration:none;color:inherit;display:block;">${card}</a>` : card;
+        }).join('')
       : '';
+    const designerPhotoCell = v.PHOTO_SLUG
+      ? `<td style="padding:0 22px 0 0;vertical-align:top;">${framedPhoto(big, designerRadius, fullName)}${designerAuthorCards}</td>`
+      : (designerAuthorCards ? `<td style="padding:0 22px 0 0;vertical-align:top;">${designerAuthorCards}</td>` : '');
 
     const nameHeading = `<div style="font-family:Arial,Helvetica,sans-serif;font-size:24px;font-weight:700;color:#0D004C;line-height:1.15;letter-spacing:0.2px;">${esc(fullName)}</div>`;
     const roleLine = titleLines.length
@@ -623,11 +889,8 @@ function render(opts = {}) {
     const sidebarLogo = v.SHOW_LOGO
       ? `<div style="margin-bottom:8px;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="42" style="display:block;height:42px;border:0;margin:0 auto;" /></a></div>`
       : '';
-    const sidebarBook = v.BOOK_SLUG
-      ? `<div style="margin-top:12px;">${bookLink}</div>`
-      : '';
-    const sidebarCell = (v.SHOW_LOGO || v.SHOW_SOCIAL || v.BOOK_SLUG)
-      ? `<td style="vertical-align:middle;padding:0 0 0 22px;border-left:1px solid #E5E7EB;text-align:center;min-width:150px;">${sidebarLogo}${(v.SHOW_LOGO) ? `<div style="font-size:12px;font-weight:700;color:#0D004C;letter-spacing:0.8px;text-transform:uppercase;">SMAART Company</div>` : ''}${sidebarSocials}${sidebarBook}</td>`
+    const sidebarCell = (v.SHOW_LOGO || v.SHOW_SOCIAL)
+      ? `<td style="vertical-align:middle;padding:0 0 0 22px;border-left:1px solid #E5E7EB;text-align:center;min-width:150px;">${sidebarLogo}${(v.SHOW_LOGO) ? `<div style="font-size:12px;font-weight:700;color:#0D004C;letter-spacing:0.8px;text-transform:uppercase;">SMAART Company</div>` : ''}${sidebarSocials}</td>`
       : '';
 
     const designerBody = `${tableOpen}
@@ -647,8 +910,8 @@ function render(opts = {}) {
   if (layout === 'triptych') {
     // Three sections with thin vertical dividers: identity · contact · branding.
     const triptychPhoto = v.PHOTO_SLUG
-      ? `<div style="text-align:center;">${framedPhoto(v.PHOTO_SIZE, photoRadius, fullName)}</div>`
-      : '';
+      ? `<div style="text-align:center;">${framedPhoto(v.PHOTO_SIZE, photoRadius, fullName)}<div style="display:inline-block;text-align:left;">${authorCardsHtml}</div></div>`
+      : (authorCardsHtml ? `<div style="text-align:center;"><div style="display:inline-block;text-align:left;">${authorCardsHtml}</div></div>` : '');
     const identitySection = `<td style="vertical-align:top;padding:0 22px 0 0;text-align:center;border-right:1px solid #E5E7EB;min-width:140px;">
       ${triptychPhoto}
       <div style="margin-top:10px;font-size:15px;font-weight:700;color:#0D004C;line-height:1.2;">${esc(fullName)}</div>
@@ -813,12 +1076,84 @@ async function renderForCopy() {
 const LAYOUTS = [
   { id: 'classic',   label: 'Classic',        hint: 'photo · info · logo right-corner' },
   { id: 'branded',   label: 'Branded header', hint: 'small logo above name' },
+  { id: 'credentials', label: 'Credentials',  hint: 'branded header + dedicated subtitle row as floating pills before disclaimer' },
+  { id: 'credentials-blue', label: 'Credentials Blue', hint: 'navy credentials block · frosted-glass subtitle panel inside' },
+  { id: 'credentials-dropdown', label: 'Drop Down Credentials', hint: 'click-to-expand native <details> — credentials hidden by default' },
   { id: 'designer',  label: 'Designer card',  hint: 'large photo · cursive name · icon contacts · right sidebar w/ logo' },
   { id: 'triptych',  label: 'Triptych',       hint: 'three sections: identity · contact · branding' },
   { id: 'banner',    label: 'Banner',         hint: 'two-row card · top white · bottom navy bar w/ logo + address' },
   { id: 'minimal',   label: 'Minimal',        hint: 'photo + info, inline contacts, outlined socials' },
   { id: 'text-only', label: 'Text-only',      hint: 'zero images + CSS-outlined socials — can never break' },
 ];
+
+// PDF list — one entry per publication. Persisted in localStorage.
+const PDFS_KEY = 'smaart-sig-pdfs';
+const PDF_COVERS = [
+  { value: 'ray-young-business', label: 'Ray Dominguez — "Young Business"' },
+];
+const PDFS_DEFAULT = [
+  { enabled: true, slug: 'ray-young-business', label: 'Author of', title: 'Young Business', hook: 'Going from Small to Successful', url: '' },
+];
+let pdfList;
+try {
+  const stored = JSON.parse(localStorage.getItem(PDFS_KEY) || 'null');
+  pdfList = Array.isArray(stored) ? stored : PDFS_DEFAULT.slice();
+} catch { pdfList = PDFS_DEFAULT.slice(); }
+function savePdfList() {
+  try { localStorage.setItem(PDFS_KEY, JSON.stringify(pdfList)); } catch {}
+}
+function pdfCoverOptions(selected) {
+  return '<option value="">— none —</option>' +
+    PDF_COVERS.map(c => `<option value="${c.value}"${c.value === selected ? ' selected' : ''}>${c.label}</option>`).join('');
+}
+function renderPdfList() {
+  const container = $('pdfList');
+  if (!container) return;
+  container.innerHTML = pdfList.map((p, i) => `
+    <div class="pdf-row" data-idx="${i}">
+      <div class="pdf-row-head">
+        <input type="checkbox" class="pdf-enabled" ${p.enabled ? 'checked' : ''} aria-label="Enable PDF" />
+        <span class="pdf-title-preview">${String(p.title || p.label || 'Untitled').replace(/&/g,'&amp;').replace(/</g,'&lt;')}</span>
+        <button type="button" class="pdf-delete" aria-label="Delete PDF">&times;</button>
+      </div>
+      <label class="pdf-field">Cover</label>
+      <select class="pdf-slug">${pdfCoverOptions(p.slug)}</select>
+      <div class="pdf-row-two">
+        <div>
+          <label class="pdf-field">Label</label>
+          <input class="pdf-label" value="${String(p.label || '').replace(/"/g,'&quot;')}" placeholder="Author of" />
+        </div>
+        <div>
+          <label class="pdf-field">Title</label>
+          <input class="pdf-title" value="${String(p.title || '').replace(/"/g,'&quot;')}" placeholder="Young Business" />
+        </div>
+      </div>
+      <label class="pdf-field">Hook</label>
+      <input class="pdf-hook" value="${String(p.hook || '').replace(/"/g,'&quot;')}" placeholder="Short polished subtitle" />
+      <label class="pdf-field">Link (optional)</label>
+      <input class="pdf-url" value="${String(p.url || '').replace(/"/g,'&quot;')}" placeholder="https://www.amazon.com/..." />
+    </div>
+  `).join('');
+  container.querySelectorAll('.pdf-row').forEach(row => {
+    const idx = +row.dataset.idx;
+    const bind = (sel, field) => row.querySelector(sel).addEventListener('input', e => {
+      pdfList[idx][field] = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+      savePdfList();
+      // Live-update preview header text
+      if (field === 'title' || field === 'label') {
+        row.querySelector('.pdf-title-preview').textContent = pdfList[idx].title || pdfList[idx].label || 'Untitled';
+      }
+      update();
+    });
+    row.querySelector('.pdf-enabled').addEventListener('change', e => { pdfList[idx].enabled = e.target.checked; savePdfList(); update(); });
+    row.querySelector('.pdf-slug').addEventListener('change', e => { pdfList[idx].slug = e.target.value; savePdfList(); update(); });
+    bind('.pdf-label', 'label');
+    bind('.pdf-title', 'title');
+    bind('.pdf-hook', 'hook');
+    bind('.pdf-url', 'url');
+    row.querySelector('.pdf-delete').addEventListener('click', () => { pdfList.splice(idx, 1); savePdfList(); renderPdfList(); update(); });
+  });
+}
 
 // Saved contacts — persisted in localStorage. Each entry: { name, email }.
 const CONTACTS_KEY = 'smaart-sig-contacts';
@@ -893,6 +1228,46 @@ function renderSubtitleList() {
   });
 }
 
+// Cloned cards — each clone has a base layout id + its own override field map.
+// Persisted in localStorage so clones survive refresh.
+const CLONES_KEY = 'smaart-sig-clones';
+let cloneList;
+try {
+  const stored = JSON.parse(localStorage.getItem(CLONES_KEY) || 'null');
+  cloneList = Array.isArray(stored) ? stored : [];
+} catch { cloneList = []; }
+function saveClones() {
+  try { localStorage.setItem(CLONES_KEY, JSON.stringify(cloneList)); } catch {}
+}
+function addClone(baseId) {
+  const base = LAYOUTS.find(l => l.id === baseId);
+  if (!base) return;
+  const existing = cloneList.filter(c => c.baseLayout === baseId).length;
+  cloneList.push({
+    id: `${baseId}-clone-${Date.now()}`,
+    baseLayout: baseId,
+    label: `${base.label} · Variant ${existing + 1}`,
+    overrides: {},
+  });
+  saveClones();
+  update();
+}
+function removeClone(cloneId) {
+  const i = cloneList.findIndex(c => c.id === cloneId);
+  if (i < 0) return;
+  cloneList.splice(i, 1);
+  saveClones();
+  update();
+}
+function setCloneOverride(cloneId, key, value) {
+  const c = cloneList.find(c => c.id === cloneId);
+  if (!c) return;
+  if (value === '' || value === undefined || value === null) delete c.overrides[key];
+  else c.overrides[key] = value;
+  saveClones();
+  update();
+}
+
 // Hidden-layouts set persisted in localStorage so hide/show survives refresh.
 const HIDDEN_KEY = 'smaart-sig-hidden-layouts';
 function getHidden() {
@@ -903,50 +1278,107 @@ function setHidden(set) {
   try { localStorage.setItem(HIDDEN_KEY, JSON.stringify([...set])); } catch {}
 }
 
+// Slug → friendly label for the Photo override select
+function photoSlugOptions(selected) {
+  const opts = Array.from($('photoSlug').options).map(o => `<option value="${o.value}"${o.value === (selected || '') ? ' selected' : ''}>${o.textContent}</option>`).join('');
+  return opts;
+}
+
+function buildCardHtml(layout, opts) {
+  const { isClone = false, clone = null } = opts;
+  const isActive = !isClone && layout.id === $('layout').value;
+  const cardId = isClone ? clone.id : layout.id;
+  const label = isClone ? clone.label : layout.label;
+  const hint = isClone ? `clone of ${layout.label}` : layout.hint;
+  const action = isActive
+    ? '<span class="variant-badge">SELECTED · this is what Copy HTML exports</span>'
+    : `<button class="variant-pick" type="button" data-pick="${cardId}">Use this</button>`;
+  const cloneBtn = !isClone ? `<button class="variant-clone" type="button" data-clone="${layout.id}" title="Clone this card">⎘ Clone</button>` : '';
+  const deleteBtn = isClone
+    ? `<button class="variant-delete" type="button" data-remove-clone="${clone.id}" title="Delete this clone" aria-label="Delete clone">&times;</button>`
+    : `<button class="variant-delete" type="button" data-hide="${layout.id}" title="Hide this layout from the gallery" aria-label="Hide ${layout.label}">&times;</button>`;
+  const overrides = isClone ? clone.overrides : {};
+  const overridesPanel = isClone ? `<div class="clone-overrides">
+    <label>Photo <select data-ov-key="PHOTO_SLUG" data-ov-clone="${clone.id}">${photoSlugOptions(overrides.PHOTO_SLUG)}</select></label>
+    <label>Shape <select data-ov-key="PHOTO_SHAPE" data-ov-clone="${clone.id}">
+      <option value=""${!overrides.PHOTO_SHAPE ? ' selected' : ''}>— inherit</option>
+      <option value="round"${overrides.PHOTO_SHAPE === 'round' ? ' selected' : ''}>Round</option>
+      <option value="squared"${overrides.PHOTO_SHAPE === 'squared' ? ' selected' : ''}>Squared</option>
+    </select></label>
+    <label>Bar <select data-ov-key="BAR_COLOR" data-ov-clone="${clone.id}">
+      <option value=""${!overrides.BAR_COLOR ? ' selected' : ''}>— inherit</option>
+      <option value="green"${overrides.BAR_COLOR === 'green' ? ' selected' : ''}>Green</option>
+      <option value="navy"${overrides.BAR_COLOR === 'navy' ? ' selected' : ''}>Navy</option>
+    </select></label>
+    <label><input type="checkbox" data-ov-key="CARD_MODE" data-ov-clone="${clone.id}" ${overrides.CARD_MODE ? 'checked' : ''} /> Card mode</label>
+  </div>` : '';
+  return `<div class="variant-card${isActive ? ' active' : ''}${isClone ? ' clone' : ''}" data-layout="${cardId}">
+    <div class="variant-head">
+      <span class="variant-name">${label}</span>
+      <span class="variant-hint">${hint}</span>
+      ${action}
+      ${cloneBtn}
+      ${deleteBtn}
+    </div>
+    ${overridesPanel}
+    <div class="variant-body">${render({ forPreview: true, layoutOverride: layout.id, overrides })}</div>
+  </div>`;
+}
+
 function update() {
   $('photoSizeVal').textContent = $('photoSize').value;
   $('photoFocusVal').textContent = $('photoFocus').value;
   const selected = $('layout').value;
   const hidden = getHidden();
   const visibleLayouts = LAYOUTS.filter(l => !hidden.has(l.id));
-  // If the selected layout was hidden, fall back to the first visible one
   if (hidden.has(selected) && visibleLayouts.length) {
     $('layout').value = visibleLayouts[0].id;
     return update();
   }
-  const cards = visibleLayouts.map(l => {
-    const isActive = l.id === $('layout').value;
-    const action = isActive
-      ? '<span class="variant-badge">SELECTED · this is what Copy HTML exports</span>'
-      : '<button class="variant-pick" type="button" data-pick="' + l.id + '">Use this</button>';
-    return `<div class="variant-card${isActive ? ' active' : ''}" data-layout="${l.id}">
-      <div class="variant-head">
-        <span class="variant-name">${l.label}</span>
-        <span class="variant-hint">${l.hint}</span>
-        ${action}
-        <button class="variant-delete" type="button" data-hide="${l.id}" title="Hide this layout from the gallery" aria-label="Hide ${l.label}">&times;</button>
-      </div>
-      <div class="variant-body">${render({ forPreview: true, layoutOverride: l.id })}</div>
-    </div>`;
-  }).join('');
+  const cards = [];
+  visibleLayouts.forEach(l => {
+    cards.push(buildCardHtml(l, { isClone: false }));
+    // Clones attached to this base layout appear right under the original
+    cloneList.filter(c => c.baseLayout === l.id).forEach(clone => {
+      cards.push(buildCardHtml(l, { isClone: true, clone }));
+    });
+  });
   const restoreBtn = hidden.size
     ? `<button class="variant-restore" type="button" id="restoreLayouts">Restore ${hidden.size} hidden layout${hidden.size === 1 ? '' : 's'}</button>`
     : '';
-  $('preview').innerHTML = cards + restoreBtn;
+  $('preview').innerHTML = cards.join('') + restoreBtn;
+  // Use this → pick that layout/clone as selected
   $('preview').querySelectorAll('[data-pick]').forEach(btn => {
     btn.addEventListener('click', () => {
       $('layout').value = btn.dataset.pick;
       update();
     });
   });
+  // Hide layout
   $('preview').querySelectorAll('[data-hide]').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
-      const id = btn.dataset.hide;
       const h = getHidden();
-      h.add(id);
+      h.add(btn.dataset.hide);
       setHidden(h);
       update();
+    });
+  });
+  // Delete clone
+  $('preview').querySelectorAll('[data-remove-clone]').forEach(btn => {
+    btn.addEventListener('click', (e) => { e.stopPropagation(); removeClone(btn.dataset.removeClone); });
+  });
+  // Clone
+  $('preview').querySelectorAll('[data-clone]').forEach(btn => {
+    btn.addEventListener('click', (e) => { e.stopPropagation(); addClone(btn.dataset.clone); });
+  });
+  // Override controls (select + checkbox)
+  $('preview').querySelectorAll('[data-ov-clone]').forEach(el => {
+    const key = el.dataset.ovKey;
+    const cloneId = el.dataset.ovClone;
+    el.addEventListener('change', () => {
+      const value = el.type === 'checkbox' ? el.checked : el.value;
+      setCloneOverride(cloneId, key, value);
     });
   });
   const restore = $('restoreLayouts');
@@ -984,6 +1416,17 @@ $('phoneE164').addEventListener('blur', () => {
   }
 });
 
+// Auto-save title(s) textarea — persists across reloads so Ray's 8-line
+// CEO title list (or whatever you last typed) comes back automatically.
+const TITLE_KEY = 'smaart-sig-title';
+try {
+  const stored = localStorage.getItem(TITLE_KEY);
+  if (stored !== null) $('title').value = stored;
+} catch {}
+$('title').addEventListener('input', () => {
+  try { localStorage.setItem(TITLE_KEY, $('title').value); } catch {}
+});
+
 // Saved contacts wiring
 renderContactsSelect();
 $('fullName').addEventListener('input', () => { maybeAutofillEmail(); update(); });
@@ -1016,6 +1459,15 @@ $('deleteContact').addEventListener('click', () => {
   renderContactsSelect();
 });
 
+// Initial PDF list render + +Add wiring
+renderPdfList();
+$('pdfAdd').addEventListener('click', () => {
+  pdfList.push({ enabled: true, slug: '', label: 'Author of', title: '', hook: '', url: '' });
+  savePdfList();
+  renderPdfList();
+  update();
+});
+
 // Initial subtitle list render + +Add wiring
 renderSubtitleList();
 $('subtitleAdd').addEventListener('click', () => {
@@ -1030,24 +1482,37 @@ $('subtitleAdd').addEventListener('click', () => {
 
 update();
 
-$('copyBtn').addEventListener('click', async () => {
+$('copyBtn').addEventListener('click', () => {
+  // Chrome invalidates the clipboard user-gesture if there's an `await`
+  // between the click and `navigator.clipboard.write()`. The fix: pass
+  // Promise-wrapped Blobs into ClipboardItem — Chrome handles the async
+  // resolution internally without losing the gesture.
   $('copyBtn').textContent = 'Embedding photo…';
-  const html = await renderForCopy();
-  const sizeKB = Math.round(new Blob([html]).size / 102.4) / 10;
-  try {
-    await navigator.clipboard.write([
-      new ClipboardItem({
-        'text/html': new Blob([html], { type: 'text/html' }),
-        'text/plain': new Blob([html], { type: 'text/plain' }),
-      })
-    ]);
-    $('copyBtn').textContent = `Copied (${sizeKB}KB)! Paste into Gmail`;
-    setTimeout(() => $('copyBtn').textContent = 'Copy HTML', 2800);
-  } catch (err) {
-    await navigator.clipboard.writeText(html);
-    $('copyBtn').textContent = 'Copied HTML source';
-    setTimeout(() => $('copyBtn').textContent = 'Copy HTML', 2200);
-  }
+  const htmlP = renderForCopy();
+  const htmlBlobP = htmlP.then(html => new Blob([html], { type: 'text/html' }));
+  const textBlobP = htmlP.then(html => new Blob([html], { type: 'text/plain' }));
+  const restoreBtn = (label, ms) => {
+    $('copyBtn').textContent = label;
+    setTimeout(() => $('copyBtn').textContent = 'Copy HTML', ms);
+  };
+  navigator.clipboard.write([
+    new ClipboardItem({ 'text/html': htmlBlobP, 'text/plain': textBlobP })
+  ]).then(async () => {
+    const html = await htmlP;
+    const sizeKB = Math.round(new Blob([html]).size / 102.4) / 10;
+    restoreBtn(`Copied (${sizeKB}KB)! Paste into Gmail`, 2800);
+  }).catch(async () => {
+    // Fallback: writeText with plain HTML source. Works even when
+    // ClipboardItem isn't supported (older browsers / Safari quirks).
+    try {
+      const html = await htmlP;
+      await navigator.clipboard.writeText(html);
+      restoreBtn('Copied HTML source', 2200);
+    } catch (e) {
+      restoreBtn('Copy failed — see console', 2800);
+      console.error('clipboard write failed:', e);
+    }
+  });
 });
 
 $('downloadBtn').addEventListener('click', async () => {

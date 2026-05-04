@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "signature-generator",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["-y", "http-server", "-p", "9123", "-c-1", "-s"],
+      "port": 9123,
+      "autoPort": false
+    }
+  ]
+}
