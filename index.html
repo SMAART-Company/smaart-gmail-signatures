@@ -533,9 +533,13 @@ function render(opts = {}) {
 
   // Secondary logo — small helper to render next to SMAART logo at any height.
   // Returns empty string when toggle off or no logo picked.
-  const secondaryLogoImg = (height) => (v.SHOW_SECONDARY_LOGO && v.SECONDARY_LOGO)
-    ? `<a href="${esc(v.SECONDARY_LOGO_URL || '#')}" style="display:inline-block;vertical-align:middle;margin-left:10px;"><img src="${v.ASSET_BASE}/logos/${v.SECONDARY_LOGO}.png${cacheBust}" alt="${esc(v.SECONDARY_LOGO)}" height="${height}" style="display:inline-block;height:${height}px;border:0;vertical-align:middle;" /></a>`
-    : '';
+  // Rendered at 1.5x the SMAART height because secondary logos (e.g. Royale's
+  // crest) tend to be visually heavier per pixel — equal-height looks small.
+  const secondaryLogoImg = (smaartHeight) => {
+    if (!v.SHOW_SECONDARY_LOGO || !v.SECONDARY_LOGO) return '';
+    const h = Math.round(smaartHeight * 1.5);
+    return `<a href="${esc(v.SECONDARY_LOGO_URL || '#')}" style="display:inline-block;vertical-align:middle;margin-left:10px;"><img src="${v.ASSET_BASE}/logos/${v.SECONDARY_LOGO}.png${cacheBust}" alt="${esc(v.SECONDARY_LOGO)}" height="${h}" style="display:inline-block;height:${h}px;border:0;vertical-align:middle;" /></a>`;
+  };
 
   // Address block
   const addrLines = v.ADDRESS.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
