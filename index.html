@@ -172,6 +172,21 @@
     </div>
     <label for="phoneE164">Phone (tel: link, E.164, optional)</label>
     <input id="phoneE164" placeholder="+13051234567" value="+13058193675" />
+
+    <label class="toggle" style="margin-top:8px;"><input type="checkbox" id="showPhone2" />Show second phone line</label>
+    <div class="row">
+      <div>
+        <label for="phone2">Second phone (display, optional)</label>
+        <input id="phone2" placeholder="+1 (954) 123-4567" value="" />
+      </div>
+      <div>
+        <label for="phone2Label">Prefix label <span class="hint">e.g. "M:" for mobile, "F:" for fax</span></label>
+        <input id="phone2Label" placeholder="M:" value="M:" />
+      </div>
+    </div>
+    <label for="phone2E164">Second phone (tel: link, E.164, optional)</label>
+    <input id="phone2E164" placeholder="+19541234567" value="" />
+
     <label class="toggle"><input type="checkbox" id="showLabels" />Prefix contact lines with "T:" / "E:" and stack vertically</label>
 
     <label for="websiteText">Website display text <span class="hint">optional — leave empty for "smaartcompany.com"</span></label>
@@ -295,6 +310,10 @@ function render(opts = {}) {
     EMAIL: $('email').value.trim(),
     PHONE_DISPLAY: $('phone').value.trim(),
     PHONE_E164: $('phoneE164').value.trim(),
+    SHOW_PHONE_2: $('showPhone2').checked,
+    PHONE_DISPLAY_2: $('phone2').value.trim(),
+    PHONE_E164_2: $('phone2E164').value.trim(),
+    PHONE_LABEL_2: $('phone2Label').value.trim() || 'M:',
     SHOW_LABELS: $('showLabels').checked,
     WEBSITE_TEXT: $('websiteText').value.trim(),
     WEBSITE_URL: $('websiteUrl').value.trim(),
@@ -505,14 +524,24 @@ function render(opts = {}) {
   const linkStyle = 'color:#0D004C;text-decoration:none;';
   const emailPart = v.EMAIL ? `<a href="${mailHref}" style="${linkStyle}">${esc(v.EMAIL)}</a>` : '';
   const phonePart = phoneShown ? `<a href="${telHref}" style="${linkStyle}">${esc(phoneShown)}</a>` : '';
+
+  // Second phone — optional, only renders when toggle is on AND a number was provided
+  const phone2Shown = v.SHOW_PHONE_2 && (v.PHONE_DISPLAY_2 || v.PHONE_E164_2);
+  const phone2TelDigits = (v.PHONE_E164_2 || v.PHONE_DISPLAY_2 || '').replace(/[^+\d]/g, '');
+  const tel2Href = phone2Shown ? `tel:${phone2TelDigits}` : '';
+  const phonePart2 = phone2Shown ? `<a href="${tel2Href}" style="${linkStyle}">${esc(v.PHONE_DISPLAY_2 || v.PHONE_E164_2)}</a>` : '';
+  const phone2Label = (v.PHONE_LABEL_2 || 'M:').replace(/\s+$/, ''); // trim trailing space, keep colon if present
+
   let contactBlock = '';
   if (v.SHOW_LABELS) {
     const rows = [];
     if (phonePart) rows.push(`<div style="font-size:13px;color:#111111;"><span style="color:#6B7280;">T:</span> ${phonePart}</div>`);
+    if (phonePart2) rows.push(`<div style="font-size:13px;color:#111111;"><span style="color:#6B7280;">${esc(phone2Label)}</span> ${phonePart2}</div>`);
     if (emailPart) rows.push(`<div style="font-size:13px;color:#111111;"><span style="color:#6B7280;">E:</span> ${emailPart}</div>`);
     contactBlock = rows.join('');
   } else {
-    const inline = (emailPart && phonePart) ? `${emailPart}&nbsp;&middot;&nbsp;${phonePart}` : (emailPart || phonePart);
+    const parts = [emailPart, phonePart, phonePart2].filter(Boolean);
+    const inline = parts.join('&nbsp;&middot;&nbsp;');
     contactBlock = inline ? `<div style="font-size:13px;color:#111111;">${inline}</div>` : '';
   }
 
@@ -625,7 +654,11 @@ function render(opts = {}) {
 
   if (layout === 'text-only') {
     // Zero-image layout. Cannot break. Recipients see plain-text-styled HTML.
-    const inlineContact = [v.PHONE_DISPLAY && `T: ${esc(v.PHONE_DISPLAY)}`, v.EMAIL && `E: ${esc(v.EMAIL)}`].filter(Boolean).join('&nbsp;&middot;&nbsp;');
+    const inlineContact = [
+      v.PHONE_DISPLAY && `T: ${esc(v.PHONE_DISPLAY)}`,
+      (v.SHOW_PHONE_2 && v.PHONE_DISPLAY_2) && `${esc((v.PHONE_LABEL_2 || 'M:').replace(/\s+$/, ''))} ${esc(v.PHONE_DISPLAY_2)}`,
+      v.EMAIL && `E: ${esc(v.EMAIL)}`
+    ].filter(Boolean).join('&nbsp;&middot;&nbsp;');
     const websiteText = (v.SHOW_WEBSITE && (v.WEBSITE_URL || v.WEBSITE_TEXT))
       ? (v.WEBSITE_TEXT || (v.WEBSITE_URL || '').replace(/^https?:\/\//, '').replace(/\/$/, ''))
       : '';
@@ -642,7 +675,8 @@ function render(opts = {}) {
 
   if (layout === 'minimal') {
     // Photo + info only. No logo cell, no social row, no address.
-    const inline = (emailPart && phonePart) ? `${emailPart}&nbsp;&middot;&nbsp;${phonePart}` : (emailPart || phonePart);
+    const minParts = [emailPart, phonePart, phonePart2].filter(Boolean);
+    const inline = minParts.join('&nbsp;&middot;&nbsp;');
     const minimalContact = inline ? `<div style="font-size:13px;color:#111111;margin-top:4px;">${inline}</div>` : '';
     const minBody = `${tableOpen}
       <tr>
