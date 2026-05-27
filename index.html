@@ -127,7 +127,7 @@
       <option value="willie-henderson">Willie Henderson</option>
     </select>
     <label for="photoSize">Photo size — <span id="photoSizeVal">96</span>px</label>
-    <input id="photoSize" type="range" min="48" max="200" step="4" value="96" />
+    <input id="photoSize" type="range" min="48" max="400" step="4" value="96" />
     <label for="photoShape">Photo shape</label>
     <select id="photoShape">
       <option value="round" selected>Round (circle)</option>
@@ -460,7 +460,11 @@ function render(opts = {}) {
   // entire circle edge-to-edge. The focus slider shifts which vertical slice
   // of the 200×200 source shows: 0 = top of source, 100 = bottom.
   const framedPhoto = (size, radius, alt) => {
-    const imgNatural = 200;
+    // Source files are typically 200x200 (some upgraded to 400x400). When the
+    // requested display size exceeds the source, scale the rendered <img> up
+    // to match the wrapper — the browser upscales but the wrapper stays full
+    // instead of leaving a gap. Source files >200px will render crisp.
+    const imgNatural = Math.max(200, size);
     const maxShift = Math.max(0, imgNatural - size);
     const shiftY = Math.round(maxShift * (v.PHOTO_FOCUS / 100));
     const shiftX = Math.round((imgNatural - size) / 2);
