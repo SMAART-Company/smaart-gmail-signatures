@@ -173,11 +173,11 @@
     <label for="phoneE164">Phone (tel: link, E.164, optional)</label>
     <input id="phoneE164" placeholder="+13051234567" value="+13058193675" />
 
-    <label class="toggle" style="margin-top:8px;"><input type="checkbox" id="showPhone2" />Show second phone line</label>
+    <label class="toggle" style="margin-top:8px;"><input type="checkbox" id="showPhone2" checked />Show second phone line</label>
     <div class="row">
       <div>
         <label for="phone2">Second phone (display, optional)</label>
-        <input id="phone2" placeholder="+1 (954) 123-4567" value="" />
+        <input id="phone2" placeholder="+1 (954) 123-4567" value="+1 (954) 563-1269" />
       </div>
       <div>
         <label for="phone2Label">Prefix label <span class="hint">e.g. "M:" for mobile, "F:" for fax</span></label>
@@ -185,20 +185,20 @@
       </div>
     </div>
     <label for="phone2E164">Second phone (tel: link, E.164, optional)</label>
-    <input id="phone2E164" placeholder="+19541234567" value="" />
+    <input id="phone2E164" placeholder="+19541234567" value="+19545631269" />
 
-    <label class="toggle"><input type="checkbox" id="showLabels" />Prefix contact lines with "T:" / "E:" and stack vertically</label>
+    <label class="toggle"><input type="checkbox" id="showLabels" checked />Prefix contact lines with "T:" / "E:" and stack vertically</label>
 
     <label for="websiteText">Website display text <span class="hint">optional — leave empty for "smaartcompany.com"</span></label>
     <input id="websiteText" placeholder="www.SMAARTCompany.com" value="www.smaartcompany.com" />
     <label for="websiteUrl">Website URL</label>
     <input id="websiteUrl" value="https://smaartcompany.com" />
 
-    <label class="toggle" style="margin-top:8px;"><input type="checkbox" id="showWebsite2" />Show second website line</label>
+    <label class="toggle" style="margin-top:8px;"><input type="checkbox" id="showWebsite2" checked />Show second website line</label>
     <label for="websiteText2">Second website display text <span class="hint">optional — e.g. another brand or property</span></label>
-    <input id="websiteText2" placeholder="www.royalemanagement.com" value="" />
+    <input id="websiteText2" placeholder="www.royalemanagement.com" value="www.royalemanagement.com" />
     <label for="websiteUrl2">Second website URL</label>
-    <input id="websiteUrl2" placeholder="https://royalemanagement.com" value="" />
+    <input id="websiteUrl2" placeholder="https://royalemanagement.com" value="https://royalemanagement.com" />
 
     <label for="address">Address <span class="hint">optional — one line per address line</span></label>
     <textarea id="address" rows="2" placeholder="2319 N Andrews Avenue&#10;Fort Lauderdale, FL 33311">2319 N. Andres Avenue
@@ -234,14 +234,14 @@ Fort Lauderdale, FL 33311</textarea>
 
     <h2 style="margin-top:22px;">Card elements <span class="hint">toggle blocks on/off</span></h2>
     <label class="toggle"><input type="checkbox" id="showLogo" checked />Show SMAART logo</label>
-    <label class="toggle"><input type="checkbox" id="showSecondaryLogo" />Show secondary logo beside SMAART</label>
+    <label class="toggle"><input type="checkbox" id="showSecondaryLogo" checked />Show secondary logo beside SMAART</label>
     <label for="secondaryLogo">Secondary logo</label>
     <select id="secondaryLogo">
-      <option value="" selected>— none —</option>
-      <option value="royale">Royale Management</option>
+      <option value="">— none —</option>
+      <option value="royale" selected>Royale Management</option>
     </select>
     <label for="secondaryLogoUrl">Secondary logo URL <span class="hint">where it links — defaults to # if blank</span></label>
-    <input id="secondaryLogoUrl" placeholder="https://royalemanagement.com" value="" />
+    <input id="secondaryLogoUrl" placeholder="https://royalemanagement.com" value="https://royalemanagement.com" />
     <label class="toggle"><input type="checkbox" id="showSocial" checked />Show social icons</label>
     <label class="toggle"><input type="checkbox" id="showBar" checked />Show vertical separator bar</label>
     <label for="barColor">Separator bar color</label>
