@@ -106,11 +106,13 @@
     <select id="photoSlug">
       <option value="" selected>— none —</option>
       <option value="albert-amarente">Albert Amarente</option>
-      <option value="alex">Alex</option>
-      <option value="anthony">Anthony</option>
+      <option value="alex">Alex Saremi</option>
+      <option value="anthony">Anthony Gonzalez</option>
+      <option value="anthony-portillo">Anthony Portillo</option>
       <option value="daniel-corcega">Daniel Corcega</option>
       <option value="daniel">Daniel Corcega (black bg)</option>
       <option value="daniel-white">Daniel Corcega (white bg)</option>
+      <option value="elysia-powell">Elysia Powell</option>
       <option value="gus">Gus</option>
       <option value="jouvens">Jouvens Corantin</option>
       <option value="lisa">Lisa Terrell</option>
@@ -172,6 +174,12 @@
     <label for="websiteUrl">Website URL</label>
     <input id="websiteUrl" value="https://smaartcompany.com" />
 
+    <label class="toggle" style="margin-top:8px;"><input type="checkbox" id="showWebsite2" />Show second website line</label>
+    <label for="websiteText2">Second website display text <span class="hint">optional — e.g. another brand or property</span></label>
+    <input id="websiteText2" placeholder="www.royalemanagement.com" value="" />
+    <label for="websiteUrl2">Second website URL</label>
+    <input id="websiteUrl2" placeholder="https://royalemanagement.com" value="" />
+
     <label for="address">Address <span class="hint">optional — one line per address line</span></label>
     <textarea id="address" rows="2" placeholder="2319 N Andrews Avenue&#10;Fort Lauderdale, FL 33311">2319 N. Andres Avenue
 Fort Lauderdale, FL 33311</textarea>
@@ -206,6 +214,14 @@ Fort Lauderdale, FL 33311</textarea>
 
     <h2 style="margin-top:22px;">Card elements <span class="hint">toggle blocks on/off</span></h2>
     <label class="toggle"><input type="checkbox" id="showLogo" checked />Show SMAART logo</label>
+    <label class="toggle"><input type="checkbox" id="showSecondaryLogo" />Show secondary logo beside SMAART</label>
+    <label for="secondaryLogo">Secondary logo</label>
+    <select id="secondaryLogo">
+      <option value="" selected>— none —</option>
+      <option value="royale">Royale Management</option>
+    </select>
+    <label for="secondaryLogoUrl">Secondary logo URL <span class="hint">where it links — defaults to # if blank</span></label>
+    <input id="secondaryLogoUrl" placeholder="https://royalemanagement.com" value="" />
     <label class="toggle"><input type="checkbox" id="showSocial" checked />Show social icons</label>
     <label class="toggle"><input type="checkbox" id="showBar" checked />Show vertical separator bar</label>
     <label for="barColor">Separator bar color</label>
@@ -277,6 +293,12 @@ function render(opts = {}) {
     SHOW_LABELS: $('showLabels').checked,
     WEBSITE_TEXT: $('websiteText').value.trim(),
     WEBSITE_URL: $('websiteUrl').value.trim(),
+    SHOW_WEBSITE_2: $('showWebsite2').checked,
+    WEBSITE_TEXT_2: $('websiteText2').value.trim(),
+    WEBSITE_URL_2: $('websiteUrl2').value.trim(),
+    SHOW_SECONDARY_LOGO: $('showSecondaryLogo').checked,
+    SECONDARY_LOGO: $('secondaryLogo').value,
+    SECONDARY_LOGO_URL: $('secondaryLogoUrl').value.trim(),
     ADDRESS: $('address').value,
     SHOW_AUTHOR_CARD: $('showAuthorCard').checked,
     SHOW_QUOTE: $('showQuote').checked,
@@ -489,13 +511,26 @@ function render(opts = {}) {
     contactBlock = inline ? `<div style="font-size:13px;color:#111111;">${inline}</div>` : '';
   }
 
-  // Website line
+  // Website line(s) — primary + optional secondary
   let websiteBlock = '';
+  const _siteLines = [];
   if (v.SHOW_WEBSITE && (v.WEBSITE_URL || v.WEBSITE_TEXT)) {
     const url = v.WEBSITE_URL || 'https://smaartcompany.com';
     const text = v.WEBSITE_TEXT || url.replace(/^https?:\/\//, '').replace(/\/$/, '');
-    websiteBlock = `<div style="font-size:13px;margin-top:2px;"><a href="${esc(url)}" style="color:#0D004C;text-decoration:none;font-weight:600;">${esc(text)}</a></div>`;
+    _siteLines.push(`<div style="font-size:13px;margin-top:2px;"><a href="${esc(url)}" style="color:#0D004C;text-decoration:none;font-weight:600;">${esc(text)}</a></div>`);
   }
+  if (v.SHOW_WEBSITE_2 && (v.WEBSITE_URL_2 || v.WEBSITE_TEXT_2)) {
+    const url2 = v.WEBSITE_URL_2 || '#';
+    const text2 = v.WEBSITE_TEXT_2 || url2.replace(/^https?:\/\//, '').replace(/\/$/, '');
+    _siteLines.push(`<div style="font-size:13px;margin-top:2px;"><a href="${esc(url2)}" style="color:#0D004C;text-decoration:none;font-weight:600;">${esc(text2)}</a></div>`);
+  }
+  websiteBlock = _siteLines.join('');
+
+  // Secondary logo — small helper to render next to SMAART logo at any height.
+  // Returns empty string when toggle off or no logo picked.
+  const secondaryLogoImg = (height) => (v.SHOW_SECONDARY_LOGO && v.SECONDARY_LOGO)
+    ? `<a href="${esc(v.SECONDARY_LOGO_URL || '#')}" style="display:inline-block;vertical-align:middle;margin-left:10px;"><img src="${v.ASSET_BASE}/logos/${v.SECONDARY_LOGO}.png${cacheBust}" alt="${esc(v.SECONDARY_LOGO)}" height="${height}" style="display:inline-block;height:${height}px;border:0;vertical-align:middle;" /></a>`
+    : '';
 
   // Address block
   const addrLines = v.ADDRESS.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
@@ -525,7 +560,7 @@ function render(opts = {}) {
   // SMAART logo — top-right corner cell. Small (28px) so it reads as a brand
   // mark inside the Card-mode frame without competing with the photo + name.
   const logoCornerCell = v.SHOW_LOGO
-    ? `<td style="vertical-align:top;padding:0 0 0 24px;text-align:right;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="28" style="display:block;height:28px;border:0;margin-left:auto;" /></a></td>`
+    ? `<td style="vertical-align:top;padding:0 0 0 24px;text-align:right;white-space:nowrap;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="28" style="display:inline-block;height:28px;border:0;vertical-align:middle;" /></a>${secondaryLogoImg(28)}</td>`
     : '';
 
   // Disclaimer — borderless subtle floating card. Soft shadow for depth,
@@ -622,7 +657,7 @@ function render(opts = {}) {
     // <details> (older Outlook desktop), the content still shows below the
     // summary text, so nothing is lost.
     const cdLogo = v.SHOW_LOGO
-      ? `<div style="margin-bottom:6px;line-height:0;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="20" style="display:block;height:20px;border:0;" /></a></div>`
+      ? `<div style="margin-bottom:6px;line-height:0;white-space:nowrap;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="20" style="display:inline-block;height:20px;border:0;vertical-align:middle;" /></a>${secondaryLogoImg(20)}</div>`
       : '';
     const cdPrimary = parsedFromTextarea[0];
     const cdPrimaryText = cdPrimary
@@ -675,7 +710,7 @@ function render(opts = {}) {
     // (semi-transparent white bg + thin light border on the navy field).
     // Readable in Gmail — rgba colors are email-safe; no backdrop-filter.
     const cbLogo = v.SHOW_LOGO
-      ? `<div style="margin-bottom:6px;line-height:0;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="20" style="display:block;height:20px;border:0;" /></a></div>`
+      ? `<div style="margin-bottom:6px;line-height:0;white-space:nowrap;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="20" style="display:inline-block;height:20px;border:0;vertical-align:middle;" /></a>${secondaryLogoImg(20)}</div>`
       : '';
     const cbPrimary = parsedFromTextarea[0];
     const cbPrimaryText = cbPrimary
@@ -724,7 +759,7 @@ function render(opts = {}) {
     // and disclaimer. Each subtitle is a small floating white pill with a
     // soft shadow — reads as a credential showcase.
     const credLogo = v.SHOW_LOGO
-      ? `<div style="margin-bottom:6px;line-height:0;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="20" style="display:block;height:20px;border:0;" /></a></div>`
+      ? `<div style="margin-bottom:6px;line-height:0;white-space:nowrap;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="20" style="display:inline-block;height:20px;border:0;vertical-align:middle;" /></a>${secondaryLogoImg(20)}</div>`
       : '';
     // Primary title only (first textarea line) — elegant italic serif. List
     // subtitles are excluded from the main content column and render below.
@@ -795,7 +830,7 @@ function render(opts = {}) {
     // Small SMAART logo above the name, no right-corner logo. Keeps proportions
     // tight — logo ~20px feels like a brand mark, subordinate to the 18px name.
     const brandedLogo = v.SHOW_LOGO
-      ? `<div style="margin-bottom:6px;line-height:0;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="20" style="display:block;height:20px;border:0;" /></a></div>`
+      ? `<div style="margin-bottom:6px;line-height:0;white-space:nowrap;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="20" style="display:inline-block;height:20px;border:0;vertical-align:middle;" /></a>${secondaryLogoImg(20)}</div>`
       : '';
     // Branded: photo cell stacks any PDF cards below the photo.
     const brandedPhotoCell = v.PHOTO_SLUG
@@ -888,7 +923,7 @@ function render(opts = {}) {
         }).join('')}</tr></table>`
       : '';
     const sidebarLogo = v.SHOW_LOGO
-      ? `<div style="margin-bottom:8px;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="42" style="display:block;height:42px;border:0;margin:0 auto;" /></a></div>`
+      ? `<div style="margin-bottom:8px;text-align:center;white-space:nowrap;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="42" style="display:inline-block;height:42px;border:0;vertical-align:middle;" /></a>${secondaryLogoImg(42)}</div>`
       : '';
     const sidebarCell = (v.SHOW_LOGO || v.SHOW_SOCIAL)
       ? `<td style="vertical-align:middle;padding:0 0 0 22px;border-left:1px solid #E5E7EB;text-align:center;min-width:150px;">${sidebarLogo}${(v.SHOW_LOGO) ? `<div style="font-size:12px;font-weight:700;color:#0D004C;letter-spacing:0.8px;text-transform:uppercase;">SMAART Company</div>` : ''}${sidebarSocials}</td>`
@@ -932,7 +967,7 @@ function render(opts = {}) {
     </td>`;
 
     const branding = `
-      ${v.SHOW_LOGO ? `<div style="margin-bottom:8px;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="36" style="display:block;height:36px;border:0;margin:0 auto;" /></a></div>` : ''}
+      ${v.SHOW_LOGO ? `<div style="margin-bottom:8px;text-align:center;white-space:nowrap;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="36" style="display:inline-block;height:36px;border:0;vertical-align:middle;" /></a>${secondaryLogoImg(36)}</div>` : ''}
       ${socialRow.replace('margin-top:12px', 'margin:10px auto 0')}
       ${v.BOOK_SLUG ? `<div style="margin-top:12px;">${bookLink}</div>` : ''}
     `;
@@ -992,7 +1027,7 @@ function render(opts = {}) {
 
     const bottomLeftCell = `<td colspan="2" style="padding:14px 18px;background:${NAVY};vertical-align:middle;">${bottomAddr}${bottomEmail}${bottomWeb || ''}</td>`;
     const bottomRightCell = `<td style="padding:14px 18px;background:${NAVY};vertical-align:middle;text-align:right;white-space:nowrap;">
-      ${v.SHOW_LOGO ? `<a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="text-decoration:none;display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white.png${cacheBust}" alt="SMAART Company" height="32" style="display:inline-block;height:32px;border:0;vertical-align:middle;" /></a>` : ''}
+      ${v.SHOW_LOGO ? `<a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="text-decoration:none;display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white.png${cacheBust}" alt="SMAART Company" height="32" style="display:inline-block;height:32px;border:0;vertical-align:middle;" /></a>${secondaryLogoImg(32)}` : ''}
     </td>`;
 
     const bannerBody = `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="font-family:Arial,Helvetica,sans-serif;color:#111111;font-size:14px;line-height:1.45;border-collapse:collapse;border:1px solid #E5E7EB;border-radius:8px;overflow:hidden;max-width:640px;">
