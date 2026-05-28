@@ -131,7 +131,8 @@
     <input id="photoSize" type="range" min="48" max="400" step="4" value="96" />
     <label for="photoShape">Photo shape</label>
     <select id="photoShape">
-      <option value="round" selected>Round (circle)</option>
+      <option value="square" selected>1:1 Square (sharp corners)</option>
+      <option value="round">Round (circle)</option>
       <option value="squared">Squared (rounded corners)</option>
     </select>
     <label for="photoFocus">Photo vertical focus — <span id="photoFocusVal">25</span>% <span class="hint">0 = top of source · 50 = center · 100 = bottom. Lower values bring the face up.</span></label>
@@ -469,8 +470,8 @@ function render(opts = {}) {
     // the img: 50% renders as a perfect circle when width=height=square.
     // Wrapped in an inline-block span only so it sits inline-flow correctly.
     // No tables, no nested wrappers, no surrounding-layout pressure to fight.
-    const isCircle = v.PHOTO_SHAPE !== 'squared';
-    const br = isCircle ? '50%' : '10px';
+    // square = sharp corners (0), round = circle (50%), squared = subtle rounding (10px)
+    const br = v.PHOTO_SHAPE === 'round' ? '50%' : v.PHOTO_SHAPE === 'squared' ? '10px' : '0';
     return `<img src="${v.ASSET_BASE}/team-images/${v.PHOTO_SLUG}.jpg${cacheBust}" width="${size}" height="${size}" alt="${esc(alt)}" style="display:inline-block;width:${size}px;height:${size}px;min-width:${size}px;max-width:${size}px;min-height:${size}px;max-height:${size}px;border:0;border-radius:${br};vertical-align:top;object-fit:cover;" />`;
   };
 
