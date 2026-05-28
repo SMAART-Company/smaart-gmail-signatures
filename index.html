@@ -568,14 +568,14 @@ function render(opts = {}) {
   // Secondary logo — small helper to render next to SMAART logo at any height.
   // Returns empty string when toggle off or no logo picked.
   //
-  // Sizing:
-  // - When paired with SMAART (SHOW_LOGO on): 1.5x SMAART height. Royale's
-  //   crest is visually heavier per pixel — equal-height looks undersized.
-  // - When solo (SHOW_LOGO off): matches the SMAART height it's replacing.
-  //   It IS the brand mark in that slot, not an accent.
+  // Always rendered at 1.5x the SMAART reference height, paired or solo.
+  // Secondary brand marks (e.g. Royale's crest) carry more visual density
+  // per pixel than the SMAART wordmark, so matching SMAART's height makes
+  // them read as undersized. Margin is added only when paired (so it sits
+  // next to SMAART with breathing room).
   const secondaryLogoImg = (smaartHeight) => {
     if (!v.SHOW_SECONDARY_LOGO || !v.SECONDARY_LOGO) return '';
-    const h = v.SHOW_LOGO ? Math.round(smaartHeight * 1.5) : smaartHeight;
+    const h = Math.round(smaartHeight * 1.5);
     const margin = v.SHOW_LOGO ? 'margin-left:10px;' : '';
     return `<a href="${esc(v.SECONDARY_LOGO_URL || '#')}" style="display:inline-block;vertical-align:middle;${margin}"><img src="${v.ASSET_BASE}/logos/${v.SECONDARY_LOGO}.png${cacheBust}" alt="${esc(v.SECONDARY_LOGO)}" height="${h}" style="display:inline-block;height:${h}px;border:0;vertical-align:middle;" /></a>`;
   };
