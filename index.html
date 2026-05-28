@@ -1549,21 +1549,87 @@ $('title').addEventListener('input', () => {
 // Saved contacts wiring
 renderContactsSelect();
 $('fullName').addEventListener('input', () => { maybeAutofillEmail(); update(); });
+// Every form field whose value should be remembered per saved contact.
+// Layout, photo choice, all toggles, all text, all URLs.
+const SAVED_FIELDS = [
+  'layout','photoSlug','photoSize','photoShape','photoFocus',
+  'fullName','title','titleStyle','showCompany',
+  'email','phone','phoneE164',
+  'showPhone2','phone2','phone2Label','phone2E164','showLabels',
+  'websiteText','websiteUrl',
+  'showWebsite2','websiteText2','websiteUrl2',
+  'address',
+  'showQuote','quoteText','quoteAuthor','quoteBg',
+  'showAuthorCard',
+  'linkedin','facebook','instagram','xurl','youtube',
+  'showLogo','showSecondaryLogo','showSecondaryLogoBelow',
+  'secondaryLogo','secondaryLogoUrl',
+  'showSocial','showBar','barColor','showWebsite',
+  'cardMode','showDisclaimer','disclaimerOutside','disclaimer',
+  'embedPhoto',
+  // NB: assetBase + cacheVer intentionally NOT saved — they're app-wide settings
+];
+
+function snapshotForm() {
+  const fields = {};
+  SAVED_FIELDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    fields[id] = el.type === 'checkbox' ? el.checked : el.value;
+  });
+  return {
+    fields,
+    pdfList: typeof pdfList !== 'undefined' ? JSON.parse(JSON.stringify(pdfList)) : [],
+    subtitles: typeof subtitles !== 'undefined' ? JSON.parse(JSON.stringify(subtitles)) : [],
+  };
+}
+
+function restoreForm(snapshot) {
+  if (!snapshot || !snapshot.fields) return;
+  Object.entries(snapshot.fields).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (el.type === 'checkbox') el.checked = !!val;
+    else el.value = val;
+  });
+  // Restore dynamic lists if present
+  if (Array.isArray(snapshot.pdfList) && typeof pdfList !== 'undefined') {
+    pdfList.length = 0;
+    snapshot.pdfList.forEach(p => pdfList.push(p));
+    if (typeof renderPdfList === 'function') renderPdfList();
+    else if (typeof savePdfList === 'function') savePdfList();
+  }
+  if (Array.isArray(snapshot.subtitles) && typeof subtitles !== 'undefined') {
+    subtitles.length = 0;
+    snapshot.subtitles.forEach(s => subtitles.push(s));
+    if (typeof renderSubtitleList === 'function') renderSubtitleList();
+  }
+  // Sync the range-slider display values
+  if (document.getElementById('photoSizeVal')) document.getElementById('photoSizeVal').textContent = $('photoSize').value;
+  if (document.getElementById('photoFocusVal')) document.getElementById('photoFocusVal').textContent = $('photoFocus').value;
+}
+
 $('savedContact').addEventListener('change', () => {
   const idx = $('savedContact').value;
   if (idx === '' || !savedContacts[+idx]) return;
   const c = savedContacts[+idx];
-  $('fullName').value = c.name;
-  $('email').value = c.email;
+  // Backwards compat: old entries only have {name, email}; new ones have a snapshot.
+  if (c.snapshot) {
+    restoreForm(c.snapshot);
+  } else {
+    $('fullName').value = c.name;
+    $('email').value = c.email;
+  }
   update();
 });
 $('saveContact').addEventListener('click', () => {
   const name = $('fullName').value.trim();
   const email = $('email').value.trim();
   if (!name || !email) { $('saveContact').textContent = 'Need name + email'; setTimeout(() => $('saveContact').textContent = '+ Save', 1400); return; }
+  const entry = { name, email, snapshot: snapshotForm(), savedAt: new Date().toISOString() };
   const existing = savedContacts.findIndex(c => c.email.toLowerCase() === email.toLowerCase());
-  if (existing >= 0) savedContacts[existing] = { name, email };
-  else savedContacts.push({ name, email });
+  if (existing >= 0) savedContacts[existing] = entry;
+  else savedContacts.push(entry);
   saveContacts();
   renderContactsSelect();
   $('savedContact').value = savedContacts.findIndex(c => c.email.toLowerCase() === email.toLowerCase());
