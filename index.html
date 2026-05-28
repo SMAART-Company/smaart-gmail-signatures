@@ -262,7 +262,7 @@ Fort Lauderdale, FL 33311</textarea>
     <label for="assetBase">Asset base URL</label>
     <input id="assetBase" value="https://cdn.jsdelivr.net/gh/SMAART-Company/smaart-gmail-signatures@main" />
     <label for="cacheVer">Image cache version <span class="hint">bump when a photo/logo changes — forces Gmail image proxy to refetch</span></label>
-    <input id="cacheVer" value="20" />
+    <input id="cacheVer" value="21" />
     <label class="toggle" style="margin-top:12px;"><input type="checkbox" id="embedPhoto" checked />Embed photo as base64 <span class="hint">bulletproof — photo lives inside the signature HTML, can't break. Resized client-side at copy time.</span></label>
 
     <div class="actions">
@@ -463,22 +463,15 @@ function render(opts = {}) {
   // entire circle edge-to-edge. The focus slider shifts which vertical slice
   // of the 200×200 source shows: 0 = top of source, 100 = bottom.
   const framedPhoto = (size, radius, alt) => {
-    // Source files are typically 200x200 (some upgraded to 400x400). When the
-    // requested display size exceeds the source, scale the rendered <img> up
-    // to match the wrapper — the browser upscales but the wrapper stays full
-    // instead of leaving a gap. Source files >200px will render crisp.
-    const imgNatural = Math.max(200, size);
-    const maxShift = Math.max(0, imgNatural - size);
-    const shiftY = Math.round(maxShift * (v.PHOTO_FOCUS / 100));
-    const shiftX = Math.round((imgNatural - size) / 2);
-    // Avatar shell = a 1-cell table with EXPLICIT width/height HTML attrs
-    // (bulletproof across browsers + email clients vs. inline-block divs
-    // which were getting stretched by surrounding table cell pressure).
-    // border-radius applied via CSS — Gmail and modern browsers respect it;
-    // Outlook will fall back to a square. Inner div keeps overflow:hidden so
-    // the focus-shift margin still crops correctly.
-    const sq = `width:${size}px;height:${size}px;min-width:${size}px;max-width:${size}px;min-height:${size}px;max-height:${size}px;`;
-    return `<table cellpadding="0" cellspacing="0" border="0" role="presentation" width="${size}" height="${size}" style="border-collapse:collapse;table-layout:fixed;${sq}"><tr style="${sq}"><td width="${size}" height="${size}" style="padding:0;${sq}border-radius:${radius};overflow:hidden;line-height:0;vertical-align:top;"><div style="${sq}border-radius:${radius};overflow:hidden;line-height:0;display:block;"><img src="${v.ASSET_BASE}/team-images/${v.PHOTO_SLUG}.jpg${cacheBust}" width="${imgNatural}" height="${imgNatural}" alt="${esc(alt)}" style="display:block;width:${imgNatural}px;height:${imgNatural}px;margin:-${shiftY}px 0 0 -${shiftX}px;border:0;" /></div></td></tr></table>`;
+    // Photo rendering — radically simplified to a direct <img> with explicit
+    // width/height attributes AND CSS. Source files are now all 1:1 pre-cropped,
+    // so no focus-shift cropping is needed. border-radius applied directly to
+    // the img: 50% renders as a perfect circle when width=height=square.
+    // Wrapped in an inline-block span only so it sits inline-flow correctly.
+    // No tables, no nested wrappers, no surrounding-layout pressure to fight.
+    const isCircle = v.PHOTO_SHAPE !== 'squared';
+    const br = isCircle ? '50%' : '10px';
+    return `<img src="${v.ASSET_BASE}/team-images/${v.PHOTO_SLUG}.jpg${cacheBust}" width="${size}" height="${size}" alt="${esc(alt)}" style="display:inline-block;width:${size}px;height:${size}px;min-width:${size}px;max-width:${size}px;min-height:${size}px;max-height:${size}px;border:0;border-radius:${br};vertical-align:top;object-fit:cover;" />`;
   };
 
   // Author cards must be defined BEFORE photoCell since photoCell references them.
