@@ -236,6 +236,7 @@ Fort Lauderdale, FL 33311</textarea>
     <h2 style="margin-top:22px;">Card elements <span class="hint">toggle blocks on/off</span></h2>
     <label class="toggle"><input type="checkbox" id="showLogo" checked />Show SMAART logo</label>
     <label class="toggle"><input type="checkbox" id="showSecondaryLogo" checked />Show secondary logo beside SMAART</label>
+    <label class="toggle"><input type="checkbox" id="showSecondaryLogoBelow" />Show secondary logo below photo</label>
     <label for="secondaryLogo">Secondary logo</label>
     <select id="secondaryLogo">
       <option value="">— none —</option>
@@ -322,6 +323,7 @@ function render(opts = {}) {
     WEBSITE_TEXT_2: $('websiteText2').value.trim(),
     WEBSITE_URL_2: $('websiteUrl2').value.trim(),
     SHOW_SECONDARY_LOGO: $('showSecondaryLogo').checked,
+    SHOW_SECONDARY_LOGO_BELOW: $('showSecondaryLogoBelow').checked,
     SECONDARY_LOGO: $('secondaryLogo').value,
     SECONDARY_LOGO_URL: $('secondaryLogoUrl').value.trim(),
     ADDRESS: $('address').value,
@@ -509,11 +511,21 @@ function render(opts = {}) {
   // ignored by Gmail's signature sanitizer); (2) the content is a single
   // nested table that Gmail treats as one atomic block. The nested-table
   // pattern is the email-safe bulletproof way to do this.
+  // Secondary logo placed BELOW the photo (separate from the beside-SMAART
+  // toggle). Scales to fit the photo column — max width = photo size so it
+  // never overflows. Auto-height keeps the aspect ratio of the source PNG.
+  const belowPhotoLogo = (v.SHOW_SECONDARY_LOGO_BELOW && v.SECONDARY_LOGO)
+    ? `<div style="margin-top:10px;text-align:center;line-height:0;"><a href="${esc(v.SECONDARY_LOGO_URL || '#')}" style="display:inline-block;"><img src="${v.ASSET_BASE}/logos/${v.SECONDARY_LOGO}.png${cacheBust}" alt="${esc(v.SECONDARY_LOGO)}" style="display:inline-block;max-width:${v.PHOTO_SIZE}px;height:auto;border:0;" /></a></div>`
+    : '';
+
+  // Stack the photo with any extras (below-photo logo + author cards) inside
+  // a nested table so Gmail treats it as one atomic block.
+  const photoExtras = [belowPhotoLogo, authorCardsHtml].filter(Boolean);
   const photoInner = v.PHOTO_SLUG
-    ? (authorCardsHtml
-        ? `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;"><tr><td style="padding:0;">${framedPhoto(v.PHOTO_SIZE, photoRadius, fullName)}</td></tr><tr><td style="padding:0;">${authorCardsHtml}</td></tr></table>`
+    ? (photoExtras.length
+        ? `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;"><tr><td style="padding:0;">${framedPhoto(v.PHOTO_SIZE, photoRadius, fullName)}</td></tr>${photoExtras.map(e => `<tr><td style="padding:0;">${e}</td></tr>`).join('')}</table>`
         : framedPhoto(v.PHOTO_SIZE, photoRadius, fullName))
-    : (authorCardsHtml || '');
+    : (photoExtras.length ? `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;">${photoExtras.map(e => `<tr><td style="padding:0;">${e}</td></tr>`).join('')}</table>` : '');
   const photoCell = photoInner
     ? `<td valign="middle" style="padding:0 20px 0 0;vertical-align:middle;">${photoInner}</td>`
     : '';
@@ -891,7 +903,7 @@ function render(opts = {}) {
       : '';
     // Branded: photo cell stacks any PDF cards below the photo.
     const brandedPhotoCell = v.PHOTO_SLUG
-      ? `<td style="padding:0 20px 0 0;vertical-align:top;">${framedPhoto(v.PHOTO_SIZE, photoRadius, fullName)}${authorCardsHtml}</td>`
+      ? `<td style="padding:0 20px 0 0;vertical-align:top;">${framedPhoto(v.PHOTO_SIZE, photoRadius, fullName)}${belowPhotoLogo}${authorCardsHtml}</td>`
       : (authorCardsHtml ? `<td style="padding:0 20px 0 0;vertical-align:top;">${authorCardsHtml}</td>` : '');
     const brandedBody = `${tableOpen}
       <tr>
