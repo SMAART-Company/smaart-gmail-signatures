@@ -471,7 +471,11 @@ function render(opts = {}) {
     const maxShift = Math.max(0, imgNatural - size);
     const shiftY = Math.round(maxShift * (v.PHOTO_FOCUS / 100));
     const shiftX = Math.round((imgNatural - size) / 2);
-    return `<div style="display:inline-block;width:${size}px;height:${size}px;border-radius:${radius};overflow:hidden;line-height:0;"><img src="${v.ASSET_BASE}/team-images/${v.PHOTO_SLUG}.jpg${cacheBust}" width="${imgNatural}" height="${imgNatural}" alt="${esc(alt)}" style="display:block;width:${imgNatural}px;height:${imgNatural}px;margin:-${shiftY}px 0 0 -${shiftX}px;border:0;" /></div>`;
+    // Ironclad square wrapper: min/max width AND height locked to `size`
+    // so no parent table/cell layout pressure can stretch the avatar into
+    // a pill/oval. box-sizing:border-box and aspect-ratio belt-and-suspenders.
+    const wrap = `display:inline-block;width:${size}px;height:${size}px;min-width:${size}px;max-width:${size}px;min-height:${size}px;max-height:${size}px;box-sizing:border-box;aspect-ratio:1/1;border-radius:${radius};overflow:hidden;line-height:0;vertical-align:top;`;
+    return `<div style="${wrap}"><img src="${v.ASSET_BASE}/team-images/${v.PHOTO_SLUG}.jpg${cacheBust}" width="${imgNatural}" height="${imgNatural}" alt="${esc(alt)}" style="display:block;width:${imgNatural}px;height:${imgNatural}px;margin:-${shiftY}px 0 0 -${shiftX}px;border:0;" /></div>`;
   };
 
   // Author cards must be defined BEFORE photoCell since photoCell references them.
