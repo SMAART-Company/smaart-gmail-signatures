@@ -260,6 +260,10 @@ Fort Lauderdale, FL 33311</textarea>
     <label for="disclaimer">Disclaimer text</label>
     <textarea id="disclaimer" rows="3">This message is confidential. If you received it in error, please notify the sender and delete.</textarea>
 
+    <label class="toggle" style="margin-top:10px;"><input type="checkbox" id="showNotes" />Show notes section <span class="hint">a second gray box for clickable links and short messages — appears above the disclaimer</span></label>
+    <label for="notesText">Notes <span class="hint">one item per line · use <code>[Label](https://url)</code> for clickable items · wrap with <code>*</code> for italics · blank line = spacer</span></label>
+    <textarea id="notesText" rows="5" placeholder="*Be sure to CC: accounting@smaartcompany.com*&#10;&#10;The responses herein are made in good faith and to the best of my ability as to their accuracy.&#10;[ONLINE PORTAL - Payments, Financials, Service Request, Documents, & More.](https://portal.example.com)&#10;[Vendor Invoice Submittal - Check Request](https://vendor.example.com)"></textarea>
+
     <h2 style="margin-top:22px;">Advanced</h2>
     <label for="assetBase">Asset base URL</label>
     <input id="assetBase" value="https://cdn.jsdelivr.net/gh/SMAART-Company/smaart-gmail-signatures@main" />
@@ -347,6 +351,8 @@ function render(opts = {}) {
     SHOW_DISCLAIMER: $('showDisclaimer').checked,
     DISCLAIMER_OUTSIDE: $('disclaimerOutside').checked,
     DISCLAIMER: $('disclaimer').value.trim(),
+    SHOW_NOTES: $('showNotes').checked,
+    NOTES_TEXT: $('notesText').value,
     BAR_COLOR: $('barColor').value,
   };
   // Per-card overrides (set by clones in the gallery) replace global values.
@@ -635,6 +641,30 @@ function render(opts = {}) {
     ? `<div style="margin-top:14px;padding:12px 14px;background:#F7F8FA;border-radius:8px;font-size:11px;color:#6B7280;line-height:1.5;max-width:620px;box-shadow:0 2px 6px rgba(13,0,76,0.05);">${esc(v.DISCLAIMER).replace(/\n/g, '<br />')}</div>`
     : '';
 
+  // Notes section — same gray-box style as disclaimer. Each line:
+  //   [Label](url)  -> clickable link (color: navy, underlined)
+  //   *text*        -> italic emphasis (works inline too)
+  //   bare email    -> auto-converted to mailto: link
+  //   (blank line)  -> small vertical spacer
+  //   anything else -> plain text
+  const renderNotesLine = (raw) => {
+    const trimmed = raw.trim();
+    if (!trimmed) return '<div style="height:6px;"></div>';
+    const linkMatch = trimmed.match(/^\[(.+)\]\((.+)\)$/);
+    if (linkMatch) {
+      return `<div style="margin:3px 0;"><a href="${esc(linkMatch[2].trim())}" style="color:#0D004C;text-decoration:underline;font-weight:600;">${esc(linkMatch[1].trim())}</a></div>`;
+    }
+    let html = esc(trimmed)
+      // Italic with *text* (non-greedy, no nested asterisks)
+      .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+      // Auto-link bare emails
+      .replace(/([A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,})/g, '<a href="mailto:$1" style="color:#0D004C;text-decoration:underline;">$1</a>');
+    return `<div style="margin:3px 0;">${html}</div>`;
+  };
+  const notesBlock = (v.SHOW_NOTES && v.NOTES_TEXT && v.NOTES_TEXT.trim())
+    ? `<div style="margin-top:14px;padding:12px 14px;background:#F7F8FA;border-radius:8px;font-size:12px;color:#4A4A4A;line-height:1.5;max-width:620px;box-shadow:0 2px 6px rgba(13,0,76,0.05);">${v.NOTES_TEXT.split(/\r?\n/).map(renderNotesLine).join('')}</div>`
+    : '';
+
   // Outlined social row — pure CSS, no image files. Shape per brand mirrors
   // the filled PNG icons in social-icons/ (drawn by scripts/build-assets.py):
   // LinkedIn/Facebook/X are circles, Instagram is a rounded square (~23%),
@@ -668,8 +698,10 @@ function render(opts = {}) {
   const cardClose = `</div>`;
   // Disclaimer placement: inside the card (default) or below it (toggle).
   // When card mode is off, both render identically — the wrappers are empty.
-  const discInside  = v.DISCLAIMER_OUTSIDE ? '' : disclaimerBlock;
-  const discOutside = v.DISCLAIMER_OUTSIDE ? disclaimerBlock : '';
+  // Notes appear ABOVE the disclaimer, both controlled by the same placement toggle.
+  const footerBlock = notesBlock + disclaimerBlock;
+  const discInside  = v.DISCLAIMER_OUTSIDE ? '' : footerBlock;
+  const discOutside = v.DISCLAIMER_OUTSIDE ? footerBlock : '';
 
   const barHex = v.BAR_COLOR === 'navy' ? '#0D004C' : '#39B54A';
   const rightCellStyle = v.SHOW_BAR
@@ -876,8 +908,10 @@ function render(opts = {}) {
     const credDisclaimerBlock = (v.SHOW_DISCLAIMER && v.DISCLAIMER)
       ? `<div style="margin-top:14px;padding:12px 14px;background:#0D004C;border-radius:10px;font-size:11px;color:rgba(255,255,255,0.72);line-height:1.5;max-width:620px;">${esc(v.DISCLAIMER).replace(/\n/g, '<br />')}</div>`
       : '';
-    const credDiscInside = v.DISCLAIMER_OUTSIDE ? '' : credDisclaimerBlock;
-    const credDiscOutside = v.DISCLAIMER_OUTSIDE ? credDisclaimerBlock : '';
+    // Same notes-then-disclaimer pairing as the global footerBlock.
+    const credFooterBlock = notesBlock + credDisclaimerBlock;
+    const credDiscInside = v.DISCLAIMER_OUTSIDE ? '' : credFooterBlock;
+    const credDiscOutside = v.DISCLAIMER_OUTSIDE ? credFooterBlock : '';
 
     const credentialsBody = `${tableOpen}
       <tr>
@@ -1567,6 +1601,7 @@ const SAVED_FIELDS = [
   'secondaryLogo','secondaryLogoUrl',
   'showSocial','showBar','barColor','showWebsite',
   'cardMode','showDisclaimer','disclaimerOutside','disclaimer',
+  'showNotes','notesText',
   'embedPhoto',
   // NB: assetBase + cacheVer intentionally NOT saved — they're app-wide settings
 ];
