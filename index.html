@@ -263,6 +263,7 @@ Fort Lauderdale, FL 33311</textarea>
     <label class="toggle" style="margin-top:10px;"><input type="checkbox" id="showNotes" />Show notes section <span class="hint">a second gray box for clickable links and short messages — appears above the disclaimer</span></label>
     <label for="notesText">Notes <span class="hint">one item per line · use <code>[Label](https://url)</code> for clickable items · wrap with <code>*</code> for italics · blank line = spacer</span></label>
     <textarea id="notesText" rows="5" placeholder="*Be sure to CC: accounting@smaartcompany.com*&#10;&#10;The responses herein are made in good faith and to the best of my ability as to their accuracy.&#10;[ONLINE PORTAL - Payments, Financials, Service Request, Documents, & More.](https://portal.example.com)&#10;[Vendor Invoice Submittal - Check Request](https://vendor.example.com)"></textarea>
+    <button type="button" id="notesAddLink" class="subtitle-add" style="margin-top:6px;">🔗 Link selected text</button>
 
     <h2 style="margin-top:22px;">Advanced</h2>
     <label for="assetBase">Asset base URL</label>
@@ -1678,6 +1679,33 @@ $('deleteContact').addEventListener('click', () => {
   savedContacts.splice(+idx, 1);
   saveContacts();
   renderContactsSelect();
+});
+
+// Notes — "Link selected text" button. Select text in the notes textarea,
+// click the button, paste a URL, and the selection becomes [text](url).
+$('notesAddLink').addEventListener('click', () => {
+  const ta = $('notesText');
+  const start = ta.selectionStart;
+  const end = ta.selectionEnd;
+  const selected = ta.value.slice(start, end).trim();
+  if (!selected) {
+    $('notesAddLink').textContent = 'Select text in the notes box first';
+    setTimeout(() => $('notesAddLink').textContent = '🔗 Link selected text', 1800);
+    return;
+  }
+  const url = prompt(`Wrap with a link.\n\nSelected text:\n  ${selected}\n\nEnter the URL:`, 'https://');
+  if (!url || url === 'https://') return;
+  const wrapped = `[${selected}](${url})`;
+  // Preserve any surrounding whitespace the user actually selected
+  const before = ta.value.slice(0, start);
+  const trailing = ta.value.slice(start, end);
+  const leadingWs = trailing.match(/^\s*/)[0];
+  const trailingWs = trailing.match(/\s*$/)[0];
+  ta.value = before + leadingWs + wrapped + trailingWs + ta.value.slice(end);
+  ta.focus();
+  const newCaret = before.length + leadingWs.length + wrapped.length;
+  ta.setSelectionRange(newCaret, newCaret);
+  update();
 });
 
 // Initial PDF list render + +Add wiring
