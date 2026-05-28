@@ -567,13 +567,22 @@ function render(opts = {}) {
 
   // Secondary logo — small helper to render next to SMAART logo at any height.
   // Returns empty string when toggle off or no logo picked.
-  // Rendered at 1.5x the SMAART height because secondary logos (e.g. Royale's
-  // crest) tend to be visually heavier per pixel — equal-height looks small.
+  //
+  // Sizing:
+  // - When paired with SMAART (SHOW_LOGO on): 1.5x SMAART height. Royale's
+  //   crest is visually heavier per pixel — equal-height looks undersized.
+  // - When solo (SHOW_LOGO off): matches the SMAART height it's replacing.
+  //   It IS the brand mark in that slot, not an accent.
   const secondaryLogoImg = (smaartHeight) => {
     if (!v.SHOW_SECONDARY_LOGO || !v.SECONDARY_LOGO) return '';
-    const h = Math.round(smaartHeight * 1.5);
-    return `<a href="${esc(v.SECONDARY_LOGO_URL || '#')}" style="display:inline-block;vertical-align:middle;margin-left:10px;"><img src="${v.ASSET_BASE}/logos/${v.SECONDARY_LOGO}.png${cacheBust}" alt="${esc(v.SECONDARY_LOGO)}" height="${h}" style="display:inline-block;height:${h}px;border:0;vertical-align:middle;" /></a>`;
+    const h = v.SHOW_LOGO ? Math.round(smaartHeight * 1.5) : smaartHeight;
+    const margin = v.SHOW_LOGO ? 'margin-left:10px;' : '';
+    return `<a href="${esc(v.SECONDARY_LOGO_URL || '#')}" style="display:inline-block;vertical-align:middle;${margin}"><img src="${v.ASSET_BASE}/logos/${v.SECONDARY_LOGO}.png${cacheBust}" alt="${esc(v.SECONDARY_LOGO)}" height="${h}" style="display:inline-block;height:${h}px;border:0;vertical-align:middle;" /></a>`;
   };
+
+  // True when either SMAART or a secondary logo will render — used to decide
+  // whether to emit the wrapping container at each render site.
+  const hasAnyLogo = v.SHOW_LOGO || (v.SHOW_SECONDARY_LOGO && v.SECONDARY_LOGO);
 
   // Address block
   const addrLines = v.ADDRESS.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
@@ -602,8 +611,8 @@ function render(opts = {}) {
 
   // SMAART logo — top-right corner cell. Small (28px) so it reads as a brand
   // mark inside the Card-mode frame without competing with the photo + name.
-  const logoCornerCell = v.SHOW_LOGO
-    ? `<td style="vertical-align:top;padding:0 0 0 24px;text-align:right;white-space:nowrap;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="28" style="display:inline-block;height:28px;border:0;vertical-align:middle;" /></a>${secondaryLogoImg(28)}</td>`
+  const logoCornerCell = hasAnyLogo
+    ? `<td style="vertical-align:top;padding:0 0 0 24px;text-align:right;white-space:nowrap;">${v.SHOW_LOGO ? `<a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="28" style="display:inline-block;height:28px;border:0;vertical-align:middle;" /></a>` : ''}${secondaryLogoImg(28)}</td>`
     : '';
 
   // Disclaimer — borderless subtle floating card. Soft shadow for depth,
@@ -704,8 +713,8 @@ function render(opts = {}) {
     // Apple Mail, and Outlook.com all support it. On clients that strip
     // <details> (older Outlook desktop), the content still shows below the
     // summary text, so nothing is lost.
-    const cdLogo = v.SHOW_LOGO
-      ? `<div style="margin-bottom:6px;line-height:0;white-space:nowrap;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="20" style="display:inline-block;height:20px;border:0;vertical-align:middle;" /></a>${secondaryLogoImg(20)}</div>`
+    const cdLogo = hasAnyLogo
+      ? `<div style="margin-bottom:6px;line-height:0;white-space:nowrap;">${v.SHOW_LOGO ? `<a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="20" style="display:inline-block;height:20px;border:0;vertical-align:middle;" /></a>` : ''}${secondaryLogoImg(20)}</div>`
       : '';
     const cdPrimary = parsedFromTextarea[0];
     const cdPrimaryText = cdPrimary
@@ -757,8 +766,8 @@ function render(opts = {}) {
     // container, with the pills sitting inside a frosted-glass inner panel
     // (semi-transparent white bg + thin light border on the navy field).
     // Readable in Gmail — rgba colors are email-safe; no backdrop-filter.
-    const cbLogo = v.SHOW_LOGO
-      ? `<div style="margin-bottom:6px;line-height:0;white-space:nowrap;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="20" style="display:inline-block;height:20px;border:0;vertical-align:middle;" /></a>${secondaryLogoImg(20)}</div>`
+    const cbLogo = hasAnyLogo
+      ? `<div style="margin-bottom:6px;line-height:0;white-space:nowrap;">${v.SHOW_LOGO ? `<a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="20" style="display:inline-block;height:20px;border:0;vertical-align:middle;" /></a>` : ''}${secondaryLogoImg(20)}</div>`
       : '';
     const cbPrimary = parsedFromTextarea[0];
     const cbPrimaryText = cbPrimary
@@ -806,8 +815,8 @@ function render(opts = {}) {
     // out of the content column into its own dedicated row between socials
     // and disclaimer. Each subtitle is a small floating white pill with a
     // soft shadow — reads as a credential showcase.
-    const credLogo = v.SHOW_LOGO
-      ? `<div style="margin-bottom:6px;line-height:0;white-space:nowrap;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="20" style="display:inline-block;height:20px;border:0;vertical-align:middle;" /></a>${secondaryLogoImg(20)}</div>`
+    const credLogo = hasAnyLogo
+      ? `<div style="margin-bottom:6px;line-height:0;white-space:nowrap;">${v.SHOW_LOGO ? `<a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="20" style="display:inline-block;height:20px;border:0;vertical-align:middle;" /></a>` : ''}${secondaryLogoImg(20)}</div>`
       : '';
     // Primary title only (first textarea line) — elegant italic serif. List
     // subtitles are excluded from the main content column and render below.
@@ -877,8 +886,8 @@ function render(opts = {}) {
   if (layout === 'branded') {
     // Small SMAART logo above the name, no right-corner logo. Keeps proportions
     // tight — logo ~20px feels like a brand mark, subordinate to the 18px name.
-    const brandedLogo = v.SHOW_LOGO
-      ? `<div style="margin-bottom:6px;line-height:0;white-space:nowrap;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="20" style="display:inline-block;height:20px;border:0;vertical-align:middle;" /></a>${secondaryLogoImg(20)}</div>`
+    const brandedLogo = hasAnyLogo
+      ? `<div style="margin-bottom:6px;line-height:0;white-space:nowrap;">${v.SHOW_LOGO ? `<a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="20" style="display:inline-block;height:20px;border:0;vertical-align:middle;" /></a>` : ''}${secondaryLogoImg(20)}</div>`
       : '';
     // Branded: photo cell stacks any PDF cards below the photo.
     const brandedPhotoCell = v.PHOTO_SLUG
@@ -970,8 +979,8 @@ function render(opts = {}) {
           return `<td style="padding:${pad};vertical-align:middle;"><a href="${esc(url)}"><img src="${v.ASSET_BASE}/social-icons/${slug}.png${cacheBust}" alt="${label}" width="22" height="22" style="display:block;width:22px;height:22px;border:0;" /></a></td>`;
         }).join('')}</tr></table>`
       : '';
-    const sidebarLogo = v.SHOW_LOGO
-      ? `<div style="margin-bottom:8px;text-align:center;white-space:nowrap;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="42" style="display:inline-block;height:42px;border:0;vertical-align:middle;" /></a>${secondaryLogoImg(42)}</div>`
+    const sidebarLogo = hasAnyLogo
+      ? `<div style="margin-bottom:8px;text-align:center;white-space:nowrap;">${v.SHOW_LOGO ? `<a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="42" style="display:inline-block;height:42px;border:0;vertical-align:middle;" /></a>` : ''}${secondaryLogoImg(42)}</div>`
       : '';
     const sidebarCell = (v.SHOW_LOGO || v.SHOW_SOCIAL)
       ? `<td style="vertical-align:middle;padding:0 0 0 22px;border-left:1px solid #E5E7EB;text-align:center;min-width:150px;">${sidebarLogo}${(v.SHOW_LOGO) ? `<div style="font-size:12px;font-weight:700;color:#0D004C;letter-spacing:0.8px;text-transform:uppercase;">SMAART Company</div>` : ''}${sidebarSocials}</td>`
@@ -1015,7 +1024,7 @@ function render(opts = {}) {
     </td>`;
 
     const branding = `
-      ${v.SHOW_LOGO ? `<div style="margin-bottom:8px;text-align:center;white-space:nowrap;"><a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="36" style="display:inline-block;height:36px;border:0;vertical-align:middle;" /></a>${secondaryLogoImg(36)}</div>` : ''}
+      ${hasAnyLogo ? `<div style="margin-bottom:8px;text-align:center;white-space:nowrap;">${v.SHOW_LOGO ? `<a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="36" style="display:inline-block;height:36px;border:0;vertical-align:middle;" /></a>` : ''}${secondaryLogoImg(36)}</div>` : ''}
       ${socialRow.replace('margin-top:12px', 'margin:10px auto 0')}
       ${v.BOOK_SLUG ? `<div style="margin-top:12px;">${bookLink}</div>` : ''}
     `;
@@ -1075,7 +1084,7 @@ function render(opts = {}) {
 
     const bottomLeftCell = `<td colspan="2" style="padding:14px 18px;background:${NAVY};vertical-align:middle;">${bottomAddr}${bottomEmail}${bottomWeb || ''}</td>`;
     const bottomRightCell = `<td style="padding:14px 18px;background:${NAVY};vertical-align:middle;text-align:right;white-space:nowrap;">
-      ${v.SHOW_LOGO ? `<a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="text-decoration:none;display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white.png${cacheBust}" alt="SMAART Company" height="32" style="display:inline-block;height:32px;border:0;vertical-align:middle;" /></a>${secondaryLogoImg(32)}` : ''}
+      ${hasAnyLogo ? `${v.SHOW_LOGO ? `<a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="text-decoration:none;display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white.png${cacheBust}" alt="SMAART Company" height="32" style="display:inline-block;height:32px;border:0;vertical-align:middle;" /></a>` : ''}${secondaryLogoImg(32)}` : ''}
     </td>`;
 
     const bannerBody = `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="font-family:Arial,Helvetica,sans-serif;color:#111111;font-size:14px;line-height:1.45;border-collapse:collapse;border:1px solid #E5E7EB;border-radius:8px;overflow:hidden;max-width:640px;">
