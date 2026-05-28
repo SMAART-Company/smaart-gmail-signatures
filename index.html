@@ -136,6 +136,7 @@
       <option value="round">Round (circle)</option>
       <option value="squared">Squared (rounded corners)</option>
     </select>
+    <label class="toggle"><input type="checkbox" id="photoMatte" />Light matte behind photo <span class="hint">adds a white frame so the photo stays visible when the reader is in Gmail dark mode</span></label>
     <label for="photoFocus">Photo vertical focus — <span id="photoFocusVal">25</span>% <span class="hint">0 = top of source · 50 = center · 100 = bottom. Lower values bring the face up.</span></label>
     <input id="photoFocus" type="range" min="0" max="100" step="5" value="25" />
     <label for="fullName">Full name</label>
@@ -319,6 +320,7 @@ function render(opts = {}) {
     ASSET_BASE: effectiveBase,
     PHOTO_SLUG: $('photoSlug').value,
     PHOTO_SIZE: parseInt($('photoSize').value, 10) || 96,
+    PHOTO_MATTE: $('photoMatte').checked,
     PHOTO_SHAPE: $('photoShape').value || 'round',
     PHOTO_FOCUS: parseInt($('photoFocus').value, 10) || 50,
     FULL_NAME: $('fullName').value.trim(),
@@ -484,11 +486,18 @@ function render(opts = {}) {
     // width/height attributes AND CSS. Source files are now all 1:1 pre-cropped,
     // so no focus-shift cropping is needed. border-radius applied directly to
     // the img: 50% renders as a perfect circle when width=height=square.
-    // Wrapped in an inline-block span only so it sits inline-flow correctly.
-    // No tables, no nested wrappers, no surrounding-layout pressure to fight.
     // square = sharp corners (0), round = circle (50%), squared = subtle rounding (10px)
     const br = v.PHOTO_SHAPE === 'round' ? '50%' : v.PHOTO_SHAPE === 'squared' ? '10px' : '0';
-    return `<img src="${v.ASSET_BASE}/team-images/${v.PHOTO_SLUG}.jpg${cacheBust}" width="${size}" height="${size}" alt="${esc(alt)}" style="display:inline-block;width:${size}px;height:${size}px;min-width:${size}px;max-width:${size}px;min-height:${size}px;max-height:${size}px;border:0;border-radius:${br};vertical-align:top;object-fit:cover;" />`;
+    const img = `<img src="${v.ASSET_BASE}/team-images/${v.PHOTO_SLUG}.jpg${cacheBust}" width="${size}" height="${size}" alt="${esc(alt)}" style="display:inline-block;width:${size}px;height:${size}px;min-width:${size}px;max-width:${size}px;min-height:${size}px;max-height:${size}px;border:0;border-radius:${br};vertical-align:top;object-fit:cover;" />`;
+    if (!v.PHOTO_MATTE) return img;
+    // Dark-mode matte: wraps the photo in a white-bg padded box. Border-radius
+    // on the matte tracks the photo shape (circle gets a circular matte, square
+    // gets a small extra rounding so the frame looks intentional, not accidental).
+    const pad = Math.max(4, Math.round(size * 0.04));
+    const matteR = v.PHOTO_SHAPE === 'round'
+      ? '50%'
+      : v.PHOTO_SHAPE === 'squared' ? `${parseInt(br) + pad}px` : `${pad}px`;
+    return `<div style="display:inline-block;padding:${pad}px;background:#FFFFFF;border-radius:${matteR};line-height:0;vertical-align:top;">${img}</div>`;
   };
 
   // Author cards must be defined BEFORE photoCell since photoCell references them.
@@ -1612,7 +1621,7 @@ $('fullName').addEventListener('input', () => { maybeAutofillEmail(); update(); 
 // Every form field whose value should be remembered per saved contact.
 // Layout, photo choice, all toggles, all text, all URLs.
 const SAVED_FIELDS = [
-  'layout','photoSlug','photoSize','photoShape','photoFocus',
+  'layout','photoSlug','photoSize','photoShape','photoMatte','photoFocus',
   'fullName','title','titleStyle','showCompany',
   'email','phone','phoneE164',
   'showPhone2','phone2','phone2Label','phone2E164','showLabels',
