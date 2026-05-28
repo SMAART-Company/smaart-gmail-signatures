@@ -54,8 +54,14 @@ SLUG_TO_SOURCE = {
     "paul-sorrentino":       None,
     "willie-henderson":      None,
     "daniel-corcega":        None,
-    # Intentionally skipped: daniel.jpg (black bg), daniel-white.jpg (white bg),
-    # elysia.jpg (Kore CRM padded variant), roxana-umana final.jpg (stray).
+    # Daniel + Ray variants — preserve as distinct slugs but re-process from
+    # existing in-repo file so they all hit the same 1:1 / face-centered standard.
+    "daniel":                None,   # black-background variant
+    "daniel-white":          None,   # white-background variant
+    "ray":                   None,
+    "ray-long":              None,   # "long shot" variant (intentionally wider)
+    "elysia":                None,   # Kore CRM padded variant
+    # Intentionally skipped: roxana-umana final.jpg (stray — separately deleted).
 }
 
 FACE_CASCADE = cv2.CascadeClassifier(
