@@ -471,11 +471,13 @@ function render(opts = {}) {
     const maxShift = Math.max(0, imgNatural - size);
     const shiftY = Math.round(maxShift * (v.PHOTO_FOCUS / 100));
     const shiftX = Math.round((imgNatural - size) / 2);
-    // Ironclad square wrapper: min/max width AND height locked to `size`
-    // so no parent table/cell layout pressure can stretch the avatar into
-    // a pill/oval. box-sizing:border-box and aspect-ratio belt-and-suspenders.
-    const wrap = `display:inline-block;width:${size}px;height:${size}px;min-width:${size}px;max-width:${size}px;min-height:${size}px;max-height:${size}px;box-sizing:border-box;aspect-ratio:1/1;border-radius:${radius};overflow:hidden;line-height:0;vertical-align:top;`;
-    return `<div style="${wrap}"><img src="${v.ASSET_BASE}/team-images/${v.PHOTO_SLUG}.jpg${cacheBust}" width="${imgNatural}" height="${imgNatural}" alt="${esc(alt)}" style="display:block;width:${imgNatural}px;height:${imgNatural}px;margin:-${shiftY}px 0 0 -${shiftX}px;border:0;" /></div>`;
+    // Avatar shell = a 1-cell table with EXPLICIT width/height HTML attrs
+    // (bulletproof across browsers + email clients vs. inline-block divs
+    // which were getting stretched by surrounding table cell pressure).
+    // border-radius applied via CSS — Gmail and modern browsers respect it;
+    // Outlook will fall back to a square. Inner div keeps overflow:hidden so
+    // the focus-shift margin still crops correctly.
+    return `<table cellpadding="0" cellspacing="0" border="0" role="presentation" width="${size}" height="${size}" style="border-collapse:collapse;table-layout:fixed;width:${size}px;height:${size}px;min-width:${size}px;max-width:${size}px;"><tr><td width="${size}" height="${size}" style="padding:0;width:${size}px;height:${size}px;border-radius:${radius};overflow:hidden;line-height:0;vertical-align:top;"><div style="width:${size}px;height:${size}px;border-radius:${radius};overflow:hidden;line-height:0;"><img src="${v.ASSET_BASE}/team-images/${v.PHOTO_SLUG}.jpg${cacheBust}" width="${imgNatural}" height="${imgNatural}" alt="${esc(alt)}" style="display:block;width:${imgNatural}px;height:${imgNatural}px;margin:-${shiftY}px 0 0 -${shiftX}px;border:0;" /></div></td></tr></table>`;
   };
 
   // Author cards must be defined BEFORE photoCell since photoCell references them.
