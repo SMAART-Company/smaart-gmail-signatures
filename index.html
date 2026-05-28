@@ -272,6 +272,14 @@ Fort Lauderdale, FL 33311</textarea>
     <input id="cacheVer" value="26" />
     <label class="toggle" style="margin-top:12px;"><input type="checkbox" id="embedPhoto" checked />Embed photo as base64 <span class="hint">bulletproof — photo lives inside the signature HTML, can't break. Resized client-side at copy time.</span></label>
 
+    <label for="outputSize" style="margin-top:12px;">Output size <span class="hint">scales the entire signature proportionally — useful when the original feels too large next to the email body</span></label>
+    <select id="outputSize">
+      <option value="1.00" selected>Original (100%)</option>
+      <option value="0.85">Medium (85%) — recommended for most</option>
+      <option value="0.70">Compact (70%) — balances with body text</option>
+      <option value="0.55">Mini (55%) — minimal footprint</option>
+    </select>
+
     <div class="actions">
       <button id="copyBtn">Copy HTML</button>
       <button class="secondary" id="downloadBtn">Download .html</button>
@@ -1204,8 +1212,24 @@ async function photoToDataUri(url, displaySize) {
   }
 }
 
+// Scale every pixel value in the rendered HTML by the chosen factor.
+// Handles both inline-style px values (font-size:14px, width:200px,
+// margin:-26px 0 0 -52px, border-radius:96px, etc.) AND HTML attributes
+// (width="200" height="200"). Anything in %, em, or unitless stays as-is.
+function applyOutputScale(html, scale) {
+  if (!scale || scale === 1) return html;
+  // Inline-style px values (preserves leading sign for negative margins)
+  html = html.replace(/(\d+(?:\.\d+)?)px/g, (m, n) => Math.round(parseFloat(n) * scale) + 'px');
+  // HTML width="N" / height="N" attributes (assume pixel values when no unit)
+  html = html.replace(/(\swidth=")(\d+)(")/g, (m, p, n, s) => p + Math.round(parseInt(n) * scale) + s);
+  html = html.replace(/(\sheight=")(\d+)(")/g, (m, p, n, s) => p + Math.round(parseInt(n) * scale) + s);
+  return html;
+}
+
 async function renderForCopy() {
   let html = render();
+  const scale = parseFloat($('outputSize').value) || 1.0;
+  html = applyOutputScale(html, scale);
   if (!$('embedPhoto').checked) return html;
   const slug = $('photoSlug').value;
   if (!slug) return html;
