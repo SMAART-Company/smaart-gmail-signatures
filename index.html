@@ -1145,16 +1145,23 @@ function renderDisclaimer() {
 // caller falls back to the original URL.
 async function photoToDataUri(url, displaySize) {
   try {
-    const r = await fetch(url, { mode: 'cors' });
+    // cache: 'reload' = force fresh fetch from origin (jsDelivr), bypass any
+    // browser-cached version. Combined with the cache-busted URL in caller,
+    // we get the latest image bytes baked into the export.
+    const r = await fetch(url, { mode: 'cors', cache: 'reload' });
     if (!r.ok) return null;
     const blob = await r.blob();
     const bitmap = await createImageBitmap(blob);
     const canvas = document.createElement('canvas');
-    const size = Math.max(96, Math.min(200, displaySize * 2)); // 2x for retina, clamped
+    // Canvas at 2x display size, clamped to [96, 400]. Higher cap so 400px
+    // displays render crisp instead of being upscaled from a 200x200 base.
+    const size = Math.max(96, Math.min(400, displaySize * 2));
     canvas.width = canvas.height = size;
     const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
     ctx.drawImage(bitmap, 0, 0, size, size);
-    return canvas.toDataURL('image/jpeg', 0.82);
+    return canvas.toDataURL('image/jpeg', 0.85);
   } catch {
     return null;
   }
@@ -1165,9 +1172,13 @@ async function renderForCopy() {
   if (!$('embedPhoto').checked) return html;
   const slug = $('photoSlug').value;
   if (!slug) return html;
-  // Fetch from local server when running from localhost (fresh), else jsDelivr
+  // Fetch from local server when running from localhost (fresh), else jsDelivr.
+  // Include the cacheVer + a timestamp so we never embed a stale CDN copy —
+  // this is the photo bytes that get baked into the exported HTML forever.
   const base = IS_LOCAL ? location.origin : $('assetBase').value.replace(/\/+$/, '');
-  const photoUrl = `${base}/team-images/${slug}.jpg`;
+  const cv = ($('cacheVer').value || '').trim();
+  const bust = `?v=${cv || Date.now()}&t=${Date.now()}`;
+  const photoUrl = `${base}/team-images/${slug}.jpg${bust}`;
   const size = parseInt($('photoSize').value, 10) || 96;
   const dataUri = await photoToDataUri(photoUrl, size);
   if (!dataUri) return html;
