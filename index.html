@@ -65,6 +65,7 @@
   .subtitle-row button.sub-delete:hover { background: #FEF2F2; color: #B91C1C; border-color: #FCA5A5; }
   .subtitle-add { margin-top: 6px; background: transparent; color: var(--navy); border: 1px dashed var(--navy); padding: 7px 12px; font-size: 11px; font-weight: 600; border-radius: 6px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.4px; font-family: inherit; width: 100%; }
   .subtitle-add:hover { background: var(--navy); color: #fff; }
+  .notes-toolbar .subtitle-add { width: auto; margin-top: 0; }
   .pdf-row { background: #FAFBFC; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin: 8px 0; }
   .pdf-row-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
   .pdf-row-head input[type="checkbox"] { margin: 0; }
@@ -92,9 +93,11 @@
     <label for="layout">Signature layout</label>
     <select id="layout">
       <option value="classic" selected>Classic — photo, info, logo right-corner</option>
+      <option value="even">Even — social icons + Refer button stacked below the photo</option>
       <option value="branded">Branded header — small logo above name</option>
       <option value="credentials">Credentials — Branded + dedicated subtitle row before disclaimer</option>
       <option value="credentials-blue">Credentials Blue — navy credentials block with frosted-glass subtitle panel</option>
+      <option value="credentials-blue-even">Credentials Blue (Even) — social icons + Refer button below the photo</option>
       <option value="credentials-dropdown">Drop Down Credentials — native collapsible (click to expand)</option>
       <option value="designer">Designer card — large photo, cursive name, right sidebar</option>
       <option value="triptych">Triptych — three sections: identity · contact · branding</option>
@@ -118,12 +121,15 @@
       <option value="elysia-powell-royale">Elysia Powell (Royale)</option>
       <option value="elysia">Elysia (padded 400px)</option>
       <option value="gus">Gus</option>
+      <option value="jill">Jill</option>
+      <option value="jill-white">Jill (white bg)</option>
       <option value="jouvens">Jouvens Corantin</option>
       <option value="lisa">Lisa Terrell</option>
       <option value="lorri-hill">Lorri Hill</option>
       <option value="paul-sorrentino">Paul Sorrentino</option>
       <option value="ray">Ray Dominguez</option>
       <option value="ray-long">Ray Dominguez (long shot)</option>
+      <option value="richelle">Richelle</option>
       <option value="roxana-umana">Roxana Umana</option>
       <option value="sondra-hoover">Sondra Hoover</option>
       <option value="willie-henderson">Willie Henderson</option>
@@ -235,6 +241,11 @@ Fort Lauderdale, FL 33311</textarea>
     <input id="xurl" value="https://x.com/smaartcompany" />
     <label for="youtube">YouTube</label>
     <input id="youtube" value="https://www.youtube.com/@smaartcompany" />
+    <label class="toggle"><input type="checkbox" id="showRefer" checked />Show &ldquo;Refer a friend&rdquo; button <span class="hint">compact green pill after the social icons</span></label>
+    <label for="referText">Refer button label</label>
+    <input id="referText" value="Refer a friend" />
+    <label for="referUrl">Refer button URL</label>
+    <input id="referUrl" value="https://smaartcompany.com/referrals/" />
 
     <h2 style="margin-top:22px;">Card elements <span class="hint">toggle blocks on/off</span></h2>
     <label class="toggle"><input type="checkbox" id="showLogo" checked />Show SMAART logo</label>
@@ -247,6 +258,8 @@ Fort Lauderdale, FL 33311</textarea>
     </select>
     <label for="secondaryLogoUrl">Secondary logo URL <span class="hint">where it links — defaults to # if blank</span></label>
     <input id="secondaryLogoUrl" placeholder="https://royalemanagement.com" value="https://royalemanagement.com" />
+    <label class="toggle"><input type="checkbox" id="showIrsEa" />Show IRS Enrolled Agent badge below photo <span class="hint">optional accreditation badge</span></label>
+    <label class="toggle"><input type="checkbox" id="showIrsCaa" />Show IRS Certifying Acceptance Agent badge below photo</label>
     <label class="toggle"><input type="checkbox" id="showSocial" checked />Show social icons</label>
     <label class="toggle"><input type="checkbox" id="showBar" checked />Show vertical separator bar</label>
     <label for="barColor">Separator bar color</label>
@@ -262,9 +275,15 @@ Fort Lauderdale, FL 33311</textarea>
     <textarea id="disclaimer" rows="3">This message is confidential. If you received it in error, please notify the sender and delete.</textarea>
 
     <label class="toggle" style="margin-top:10px;"><input type="checkbox" id="showNotes" />Show notes section <span class="hint">a second gray box for clickable links and short messages — appears above the disclaimer</span></label>
-    <label for="notesText">Notes <span class="hint">one item per line · use <code>[Label](https://url)</code> for clickable items · wrap with <code>*</code> for italics · blank line = spacer</span></label>
+    <label for="notesText">Notes <span class="hint">one item per line · blank line = spacer · select text below, then use a button to format. Markup: <code>[Label](url)</code> link · <code>**bold**</code> · <code>{{o:..}}</code> orange · <code>{{r:..}}</code> red · <code>*italic*</code></span></label>
     <textarea id="notesText" rows="5" placeholder="*Be sure to CC: accounting@smaartcompany.com*&#10;&#10;The responses herein are made in good faith and to the best of my ability as to their accuracy.&#10;[ONLINE PORTAL - Payments, Financials, Service Request, Documents, & More.](https://portal.example.com)&#10;[Vendor Invoice Submittal - Check Request](https://vendor.example.com)"></textarea>
-    <button type="button" id="notesAddLink" class="subtitle-add" style="margin-top:6px;">🔗 Link selected text</button>
+    <div class="notes-toolbar" style="margin-top:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+      <button type="button" id="notesAddLink" class="subtitle-add">🔗 Link</button>
+      <button type="button" id="notesBold" class="subtitle-add" style="font-weight:800;">B</button>
+      <button type="button" id="notesOrange" class="subtitle-add" style="color:#F7941D;font-weight:700;">Orange</button>
+      <button type="button" id="notesRed" class="subtitle-add" style="color:#D32F2F;font-weight:700;">Red</button>
+      <button type="button" id="notesNormal" class="subtitle-add">Normal</button>
+    </div>
 
     <h2 style="margin-top:22px;">Advanced</h2>
     <label for="assetBase">Asset base URL</label>
@@ -343,6 +362,8 @@ function render(opts = {}) {
     SHOW_SECONDARY_LOGO_BELOW: $('showSecondaryLogoBelow').checked,
     SECONDARY_LOGO: $('secondaryLogo').value,
     SECONDARY_LOGO_URL: $('secondaryLogoUrl').value.trim(),
+    SHOW_IRS_EA: $('showIrsEa').checked,
+    SHOW_IRS_CAA: $('showIrsCaa').checked,
     ADDRESS: $('address').value,
     SHOW_AUTHOR_CARD: $('showAuthorCard').checked,
     SHOW_QUOTE: $('showQuote').checked,
@@ -365,12 +386,23 @@ function render(opts = {}) {
     SHOW_NOTES: $('showNotes').checked,
     NOTES_TEXT: $('notesText').value,
     BAR_COLOR: $('barColor').value,
+    SHOW_REFER: $('showRefer').checked,
+    REFER_TEXT: $('referText').value.trim() || 'Refer a friend',
+    REFER_URL: $('referUrl').value.trim() || 'https://smaartcompany.com/referrals/',
   };
   // Per-card overrides (set by clones in the gallery) replace global values.
   // Only whitelisted keys get overridden; everything else stays global.
   if (overrides && Object.keys(overrides).length) Object.assign(v, overrides);
 
   const fullName = v.FULL_NAME || 'Your Name';
+
+  // "Refer a friend" CTA — compact green pill (matches the accent bar). Pure
+  // CSS/text, no image, so it never breaks. Rendered as an inline-block anchor
+  // inside a block div so it inherits each layout's text-align (left in Classic,
+  // centered in Designer/Banner). Appended after every social-icons renderer.
+  const referRow = v.SHOW_REFER
+    ? `<div style="margin-top:10px;font-size:0;"><a href="${esc(v.REFER_URL)}" style="display:inline-block;padding:7px 15px;font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:700;line-height:1;color:#FFFFFF;background:#39B54A;border-radius:6px;text-decoration:none;letter-spacing:0.3px;">${esc(v.REFER_TEXT)}&nbsp;&rarr;</a></div>`
+    : '';
 
   // Title block — multiple display styles. Picked via titleStyle select.
   // Supports per-title links via markdown syntax: [Title](https://url).
@@ -540,9 +572,29 @@ function render(opts = {}) {
   // Secondary logo placed BELOW the photo (separate from the beside-SMAART
   // toggle). Scales to fit the photo column — max width = photo size so it
   // never overflows. Auto-height keeps the aspect ratio of the source PNG.
-  const belowPhotoLogo = (v.SHOW_SECONDARY_LOGO_BELOW && v.SECONDARY_LOGO)
-    ? `<div style="margin-top:10px;text-align:center;line-height:0;"><a href="${esc(v.SECONDARY_LOGO_URL || '#')}" style="display:inline-block;"><img src="${v.ASSET_BASE}/logos/${v.SECONDARY_LOGO}.png${cacheBust}" alt="${esc(v.SECONDARY_LOGO)}" style="display:inline-block;max-width:${v.PHOTO_SIZE}px;height:auto;border:0;" /></a></div>`
-    : '';
+  // Below-photo logo stack. Each part is optional and centered under the photo,
+  // scaled to the photo width so it never overflows: the Royale (secondary)
+  // brand logo, then any enabled IRS accreditation badges (Enrolled Agent,
+  // Certifying Acceptance Agent). All off by default — purely additive.
+  const belowImg = (slug, alt, url) => {
+    const img = `<img src="${v.ASSET_BASE}/logos/${slug}.png${cacheBust}" alt="${esc(alt)}" style="display:inline-block;max-width:${v.PHOTO_SIZE}px;height:auto;border:0;" />`;
+    const inner = url ? `<a href="${esc(url)}" style="display:inline-block;">${img}</a>` : img;
+    return `<div style="margin-top:10px;text-align:center;line-height:0;">${inner}</div>`;
+  };
+  const belowPhotoParts = [];
+  if (v.SHOW_SECONDARY_LOGO_BELOW && v.SECONDARY_LOGO) belowPhotoParts.push(belowImg(v.SECONDARY_LOGO, v.SECONDARY_LOGO, v.SECONDARY_LOGO_URL || '#'));
+  // IRS accreditation badges — sized to FIT THE IMAGE WIDTH. When both show,
+  // each takes half the photo width (minus a small gap) so the pair spans the
+  // same width as the photo above. A single badge fills the full photo width.
+  const irsGap = 6;
+  const irsCount = (v.SHOW_IRS_EA ? 1 : 0) + (v.SHOW_IRS_CAA ? 1 : 0);
+  const irsW = irsCount === 2 ? Math.floor((v.PHOTO_SIZE - irsGap) / 2) : v.PHOTO_SIZE;
+  const irsBadge = (slug, alt, isSecond) => `<img src="${v.ASSET_BASE}/logos/${slug}.png${cacheBust}" alt="${esc(alt)}" style="display:inline-block;width:${irsW}px;height:auto;border:0;vertical-align:middle;${isSecond ? `margin-left:${irsGap}px;` : ''}" />`;
+  const irsImgs = [];
+  if (v.SHOW_IRS_EA) irsImgs.push(irsBadge('irs-ea', 'IRS Enrolled Agent', false));
+  if (v.SHOW_IRS_CAA) irsImgs.push(irsBadge('irs-caa', 'IRS Certifying Acceptance Agent', irsImgs.length > 0));
+  if (irsImgs.length) belowPhotoParts.push(`<div style="margin-top:10px;text-align:center;line-height:0;font-size:0;">${irsImgs.join('')}</div>`);
+  const belowPhotoLogo = belowPhotoParts.join('');
 
   // Stack the photo with any extras (below-photo logo + author cards) inside
   // a nested table so Gmail treats it as one atomic block.
@@ -626,10 +678,13 @@ function render(opts = {}) {
   // rendered logo group in a white-padded box so the navy SMAART text and
   // Royale's dark crest stay legible against a dark Gmail body.
   // Invisible in light mode (white on white).
-  const matteLogos = (logoHtml, heightHint) => {
+  const matteLogos = (logoHtml, heightHint, hangLeft) => {
     if (!v.PHOTO_MATTE || !logoHtml) return logoHtml;
     const pad = Math.max(4, Math.round((heightHint || 24) * 0.18));
-    return `<div style="display:inline-block;padding:${pad}px ${pad + 2}px;background:#FFFFFF;border-radius:${pad}px;line-height:0;vertical-align:middle;">${logoHtml}</div>`;
+    // hangLeft: pull the box back by its own left padding so the logo's visual
+    // left edge lines up with the name/text below it (left-aligned layouts only).
+    const hang = hangLeft ? `margin-left:-${pad + 2}px;` : '';
+    return `<div style="display:inline-block;${hang}padding:${pad}px ${pad + 2}px;background:#FFFFFF;border-radius:${pad}px;line-height:0;vertical-align:middle;">${logoHtml}</div>`;
   };
 
   // Address block
@@ -649,8 +704,23 @@ function render(opts = {}) {
     const pad = i === 0 ? '0 6px 0 0' : '0 6px';
     return `<td style="padding:${pad};vertical-align:middle;"><a href="${esc(url)}"><img src="${v.ASSET_BASE}/social-icons/${slug}.png${cacheBust}" alt="${label}" width="22" height="22" style="display:block;width:22px;height:22px;border:0;" /></a></td>`;
   }).join('') : '';
-  const socialRow = v.SHOW_SOCIAL
-    ? `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-top:12px;border-collapse:collapse;"><tr>${socialCells}</tr></table>`
+  const socialRow = (v.SHOW_SOCIAL || v.SHOW_REFER)
+    ? `${v.SHOW_SOCIAL ? `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-top:12px;border-collapse:collapse;"><tr>${socialCells}</tr></table>` : ''}${referRow}`
+    : '';
+
+  // "Even"-style left cell — photo + below-photo logo + author cards + the
+  // social icons & Refer button, all stacked and centered under the image.
+  // Moving the social/Refer group out of the text column balances the two
+  // columns' heights. Shared by the "even" and "credentials-blue-even" layouts.
+  const evenSocialStack = (v.SHOW_SOCIAL || v.SHOW_REFER)
+    ? `<div style="text-align:center;">${socialRow.replace('margin-top:12px', 'margin:12px auto 0')}</div>`
+    : '';
+  const evenPhotoExtras = [belowPhotoLogo, authorCardsHtml, evenSocialStack].filter(Boolean);
+  const evenPhotoInner = v.PHOTO_SLUG
+    ? `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;"><tr><td style="padding:0;text-align:center;">${framedPhoto(v.PHOTO_SIZE, photoRadius, fullName)}</td></tr>${evenPhotoExtras.map(e => `<tr><td style="padding:0;text-align:center;">${e}</td></tr>`).join('')}</table>`
+    : (evenPhotoExtras.length ? `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-collapse:collapse;">${evenPhotoExtras.map(e => `<tr><td style="padding:0;text-align:center;">${e}</td></tr>`).join('')}</table>` : '');
+  const evenPhotoCell = evenPhotoInner
+    ? `<td valign="top" style="padding:0 20px 0 0;vertical-align:top;">${evenPhotoInner}</td>`
     : '';
 
   // bookCell kept as empty so old template references still compile — author
@@ -670,8 +740,10 @@ function render(opts = {}) {
     : '';
 
   // Notes section — same gray-box style as disclaimer. Each line:
-  //   [Label](url)  -> clickable link (color: navy, underlined)
-  //   *text*        -> italic emphasis (works inline too)
+  //   [Label](url)  -> clickable link (color: navy, underlined) — works inline too
+  //   **text**      -> bold
+  //   {{o:text}}    -> orange · {{r:text}} -> red
+  //   *text*        -> italic emphasis
   //   bare email    -> auto-converted to mailto: link
   //   (blank line)  -> small vertical spacer
   //   anything else -> plain text
@@ -683,10 +755,18 @@ function render(opts = {}) {
       return `<div style="margin:3px 0;"><a href="${esc(linkMatch[2].trim())}" style="color:#0D004C;text-decoration:underline;font-weight:600;">${esc(linkMatch[1].trim())}</a></div>`;
     }
     let html = esc(trimmed)
-      // Italic with *text* (non-greedy, no nested asterisks)
+      // Bold: **text** (process before single-* italics so ** isn't eaten by *)
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      // Color: {{o:text}} orange · {{r:text}} red — content may already hold tags
+      .replace(/\{\{o:([^}]+)\}\}/g, '<span style="color:#F7941D;">$1</span>')
+      .replace(/\{\{r:([^}]+)\}\}/g, '<span style="color:#D32F2F;">$1</span>')
+      // Italic with *text*
       .replace(/\*([^*]+)\*/g, '<em>$1</em>')
-      // Auto-link bare emails
-      .replace(/([A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,})/g, '<a href="mailto:$1" style="color:#0D004C;text-decoration:underline;">$1</a>');
+      // Inline links: [label](url) — label may contain the tags added above
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color:#0D004C;text-decoration:underline;font-weight:600;">$1</a>')
+      // Auto-link bare emails (only at start or after whitespace, so emails
+      // already inside a mailto: href above are not double-linked)
+      .replace(/(^|\s)([A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,})/g, '$1<a href="mailto:$2" style="color:#0D004C;text-decoration:underline;">$2</a>');
     return `<div style="margin:3px 0;">${html}</div>`;
   };
   const notesBlock = (v.SHOW_NOTES && v.NOTES_TEXT && v.NOTES_TEXT.trim())
@@ -698,7 +778,7 @@ function render(opts = {}) {
   // LinkedIn/Facebook/X are circles, Instagram is a rounded square (~23%),
   // YouTube is a wide rounded rectangle. White fill + navy border + navy
   // glyph — the exact inverse of the filled PNGs used in Classic/Branded.
-  const outlinedSocialRow = v.SHOW_SOCIAL ? (() => {
+  const outlinedSocialRow = (v.SHOW_SOCIAL ? (() => {
     const NAVY = '#0D004C';
     const fontStack = "-apple-system,BlinkMacSystemFont,'Helvetica Neue',Helvetica,Arial,sans-serif";
     const base = `display:inline-block;background:#FFFFFF;border:2px solid ${NAVY};color:${NAVY};font-family:${fontStack};font-weight:800;text-align:center;text-decoration:none;margin-right:6px;vertical-align:middle;box-sizing:border-box;`;
@@ -714,7 +794,7 @@ function render(opts = {}) {
       `<a href="${esc(url)}" aria-label="${label}" style="${base}width:${w}px;height:${h}px;border-radius:${r};font-size:${fs}px;line-height:${lh};letter-spacing:${ls};">${glyph}</a>`
     ).join('');
     return `<div style="margin-top:10px;">${links}</div>`;
-  })() : '';
+  })() : '') + referRow;
 
   // Outer wrapper — always caps the signature at 620px so every layout is
   // the same width as the disclaimer box below (or inside) it. Card-mode
@@ -788,7 +868,7 @@ function render(opts = {}) {
     // <details> (older Outlook desktop), the content still shows below the
     // summary text, so nothing is lost.
     const cdLogo = hasAnyLogo
-      ? `<div style="margin-bottom:6px;line-height:0;white-space:nowrap;">${matteLogos((v.SHOW_LOGO ? `<a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="20" style="display:inline-block;height:20px;border:0;vertical-align:middle;" /></a>` : '') + secondaryLogoImg(20), 20)}</div>`
+      ? `<div style="margin-bottom:6px;line-height:0;white-space:nowrap;">${matteLogos((v.SHOW_LOGO ? `<a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="20" style="display:inline-block;height:20px;border:0;vertical-align:middle;" /></a>` : '') + secondaryLogoImg(20), 20, true)}</div>`
       : '';
     const cdPrimary = parsedFromTextarea[0];
     const cdPrimaryText = cdPrimary
@@ -835,13 +915,13 @@ function render(opts = {}) {
     return `${cardOpen}${credentialsDropdownBody}${discInside}${cardClose}${discOutside}`;
   }
 
-  if (layout === 'credentials-blue') {
+  if (layout === 'credentials-blue' || layout === 'credentials-blue-even') {
     // Same skeleton as Credentials but the credential row becomes a navy
     // container, with the pills sitting inside a frosted-glass inner panel
     // (semi-transparent white bg + thin light border on the navy field).
     // Readable in Gmail — rgba colors are email-safe; no backdrop-filter.
     const cbLogo = hasAnyLogo
-      ? `<div style="margin-bottom:6px;line-height:0;white-space:nowrap;">${matteLogos((v.SHOW_LOGO ? `<a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="20" style="display:inline-block;height:20px;border:0;vertical-align:middle;" /></a>` : '') + secondaryLogoImg(20), 20)}</div>`
+      ? `<div style="margin-bottom:6px;line-height:0;white-space:nowrap;">${matteLogos((v.SHOW_LOGO ? `<a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="20" style="display:inline-block;height:20px;border:0;vertical-align:middle;" /></a>` : '') + secondaryLogoImg(20), 20, true)}</div>`
       : '';
     const cbPrimary = parsedFromTextarea[0];
     const cbPrimaryText = cbPrimary
@@ -865,9 +945,10 @@ function render(opts = {}) {
         </div>`
       : '';
 
+    const cbEven = (layout === 'credentials-blue-even');
     const credentialsBlueBody = `${tableOpen}
       <tr>
-        ${photoCell}
+        ${cbEven ? evenPhotoCell : photoCell}
         <td style="${rightCellStyle}">
           ${cbLogo}
           ${nameLine}
@@ -875,7 +956,7 @@ function render(opts = {}) {
           ${contactBlock}
           ${websiteBlock}
           ${addressBlock}
-          ${socialRow}
+          ${cbEven ? '' : socialRow}
         </td>
       </tr>
     </table>${cbCredentialRow}`;
@@ -890,7 +971,7 @@ function render(opts = {}) {
     // and disclaimer. Each subtitle is a small floating white pill with a
     // soft shadow — reads as a credential showcase.
     const credLogo = hasAnyLogo
-      ? `<div style="margin-bottom:6px;line-height:0;white-space:nowrap;">${matteLogos((v.SHOW_LOGO ? `<a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="20" style="display:inline-block;height:20px;border:0;vertical-align:middle;" /></a>` : '') + secondaryLogoImg(20), 20)}</div>`
+      ? `<div style="margin-bottom:6px;line-height:0;white-space:nowrap;">${matteLogos((v.SHOW_LOGO ? `<a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="20" style="display:inline-block;height:20px;border:0;vertical-align:middle;" /></a>` : '') + secondaryLogoImg(20), 20, true)}</div>`
       : '';
     // Primary title only (first textarea line) — elegant italic serif. List
     // subtitles are excluded from the main content column and render below.
@@ -963,7 +1044,7 @@ function render(opts = {}) {
     // Small SMAART logo above the name, no right-corner logo. Keeps proportions
     // tight — logo ~20px feels like a brand mark, subordinate to the 18px name.
     const brandedLogo = hasAnyLogo
-      ? `<div style="margin-bottom:6px;line-height:0;white-space:nowrap;">${matteLogos((v.SHOW_LOGO ? `<a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="20" style="display:inline-block;height:20px;border:0;vertical-align:middle;" /></a>` : '') + secondaryLogoImg(20), 20)}</div>`
+      ? `<div style="margin-bottom:6px;line-height:0;white-space:nowrap;">${matteLogos((v.SHOW_LOGO ? `<a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="20" style="display:inline-block;height:20px;border:0;vertical-align:middle;" /></a>` : '') + secondaryLogoImg(20), 20, true)}</div>`
       : '';
     // Branded: photo cell stacks any PDF cards below the photo.
     const brandedPhotoCell = v.PHOTO_SLUG
@@ -1043,7 +1124,7 @@ function render(opts = {}) {
     ].join('');
 
     // Right sidebar — logo stacked over "SMAART Company" + filled-navy socials
-    const sidebarSocials = v.SHOW_SOCIAL
+    const sidebarSocials = (v.SHOW_SOCIAL
       ? `<table cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin:10px auto 0;border-collapse:collapse;"><tr>${[
           ['linkedin','LinkedIn',v.LINKEDIN_URL],
           ['facebook','Facebook',v.FACEBOOK_URL],
@@ -1054,7 +1135,7 @@ function render(opts = {}) {
           const pad = i === 0 ? '0 4px 0 0' : '0 4px';
           return `<td style="padding:${pad};vertical-align:middle;"><a href="${esc(url)}"><img src="${v.ASSET_BASE}/social-icons/${slug}.png${cacheBust}" alt="${label}" width="22" height="22" style="display:block;width:22px;height:22px;border:0;" /></a></td>`;
         }).join('')}</tr></table>`
-      : '';
+      : '') + referRow;
     const sidebarLogo = hasAnyLogo
       ? `<div style="margin-bottom:8px;text-align:center;white-space:nowrap;">${matteLogos((v.SHOW_LOGO ? `<a href="${esc(v.WEBSITE_URL || 'https://smaartcompany.com')}" style="display:inline-block;vertical-align:middle;"><img src="${v.ASSET_BASE}/logos/smaart-white-and-navy.png${cacheBust}" alt="SMAART Company" height="42" style="display:inline-block;height:42px;border:0;vertical-align:middle;" /></a>` : '') + secondaryLogoImg(42), 42)}</div>`
       : '';
@@ -1129,7 +1210,7 @@ function render(opts = {}) {
 
     const phoneLine = phoneShown ? `<div style="font-size:12px;color:#111111;">Call: ${phonePart}</div>` : '';
     // Socials inline under the call line — filled-navy PNG icons, left-aligned
-    const bannerSocials = v.SHOW_SOCIAL
+    const bannerSocials = (v.SHOW_SOCIAL
       ? `<div style="margin-top:10px;">${[
           ['linkedin','LinkedIn',v.LINKEDIN_URL],
           ['facebook','Facebook',v.FACEBOOK_URL],
@@ -1139,7 +1220,7 @@ function render(opts = {}) {
         ].map(([slug,label,url],i) =>
           `<a href="${esc(url)}" style="text-decoration:none;margin-right:${i === 4 ? 0 : 4}px;display:inline-block;"><img src="${v.ASSET_BASE}/social-icons/${slug}.png${cacheBust}" alt="${label}" width="22" height="22" style="display:inline-block;width:22px;height:22px;border:0;vertical-align:middle;" /></a>`
         ).join('')}</div>`
-      : '';
+      : '') + referRow;
     const topMiddle = `<td style="padding:18px 16px 14px 0;vertical-align:top;">
       <div style="font-size:17px;font-weight:700;color:#0D004C;line-height:1.1;">${esc(fullName)}</div>
       ${titleLines.length ? `<div style="font-size:12px;color:#6B7280;margin:2px 0 8px 0;">${titleLines.map(esc).join(' &middot; ')}</div>` : ''}
@@ -1174,6 +1255,28 @@ function render(opts = {}) {
       </tr>
     </table>`;
     return `${cardOpen}${bannerBody}${discInside}${cardClose}${discOutside}`;
+  }
+
+  if (layout === 'even') {
+    // Even / Balanced: same as Classic, but the social icons + Refer button move
+    // into the LEFT photo column — stacked and centered under the image (via the
+    // shared evenPhotoCell) — instead of sitting at the bottom of the text
+    // column. This evens out the two columns' heights so a short contact block
+    // doesn't leave the photo side looking top-heavy. Logo stays right-corner.
+    const evenBody = `${tableOpen}
+  <tr>
+    ${evenPhotoCell}
+    <td style="${rightCellStyle}">
+      ${nameLine}
+      ${titleBlock}
+      ${contactBlock}
+      ${websiteBlock}
+      ${addressBlock}
+    </td>
+    ${logoCornerCell}
+  </tr>
+</table>`;
+    return `${cardOpen}${evenBody}${discInside}${cardClose}${discOutside}`;
   }
 
   // classic (default): photo + info + optional book cover + right-corner logo
@@ -1271,9 +1374,11 @@ async function renderForCopy() {
 
 const LAYOUTS = [
   { id: 'classic',   label: 'Classic',        hint: 'photo · info · logo right-corner' },
+  { id: 'even',      label: 'Even',           hint: 'photo with social icons + Refer button stacked below it — balances column heights' },
   { id: 'branded',   label: 'Branded header', hint: 'small logo above name' },
   { id: 'credentials', label: 'Credentials',  hint: 'branded header + dedicated subtitle row as floating pills before disclaimer' },
   { id: 'credentials-blue', label: 'Credentials Blue', hint: 'navy credentials block · frosted-glass subtitle panel inside' },
+  { id: 'credentials-blue-even', label: 'Credentials Blue (Even)', hint: 'Credentials Blue with social icons + Refer button stacked below the photo — balanced heights' },
   { id: 'credentials-dropdown', label: 'Drop Down Credentials', hint: 'click-to-expand native <details> — credentials hidden by default' },
   { id: 'designer',  label: 'Designer card',  hint: 'large photo · cursive name · icon contacts · right sidebar w/ logo' },
   { id: 'triptych',  label: 'Triptych',       hint: 'three sections: identity · contact · branding' },
@@ -1643,9 +1748,11 @@ const SAVED_FIELDS = [
   'linkedin','facebook','instagram','xurl','youtube',
   'showLogo','showSecondaryLogo','showSecondaryLogoBelow',
   'secondaryLogo','secondaryLogoUrl',
+  'showIrsEa','showIrsCaa',
   'showSocial','showBar','barColor','showWebsite',
   'cardMode','showDisclaimer','disclaimerOutside','disclaimer',
   'showNotes','notesText',
+  'showRefer','referText','referUrl',
   'embedPhoto',
   // NB: assetBase + cacheVer intentionally NOT saved — they're app-wide settings
 ];
@@ -1724,22 +1831,49 @@ $('deleteContact').addEventListener('click', () => {
   renderContactsSelect();
 });
 
-// Notes — "Link selected text" button. Select text in the notes textarea,
-// click the button, paste a URL, and the selection becomes [text](url).
+// Track the notes textarea's last real selection. Some browsers (Safari/
+// WebKit) drop a textarea's selection the instant another element takes focus,
+// so by the time a toolbar button's click handler runs, selectionStart/End
+// have collapsed. We remember the last non-empty range and fall back to it.
+// Paired with mousedown-preventDefault on the buttons (below) which keeps the
+// textarea focused so the live selection usually stays intact anyway.
+let notesSel = { start: 0, end: 0 };
+(function initNotesSelTracking() {
+  const ta = $('notesText');
+  if (!ta) return;
+  const save = () => {
+    if (ta.selectionEnd > ta.selectionStart) {
+      notesSel = { start: ta.selectionStart, end: ta.selectionEnd };
+    }
+  };
+  ['keyup', 'mouseup', 'select', 'input'].forEach(ev => ta.addEventListener(ev, save));
+})();
+// Return the range to act on: the live selection if it's a real range, else the
+// last tracked range. Returns null if there's genuinely nothing selected.
+function getNotesRange() {
+  const ta = $('notesText');
+  if (ta.selectionEnd > ta.selectionStart) return { start: ta.selectionStart, end: ta.selectionEnd };
+  if (notesSel.end > notesSel.start) return { start: notesSel.start, end: notesSel.end };
+  return null;
+}
+function flashBtn(id, msg, restore) {
+  const b = $(id); if (!b) return;
+  const original = restore || b.textContent;
+  b.textContent = msg;
+  setTimeout(() => { b.textContent = original; }, 1500);
+}
+
+// Notes — "Link" button. Select text, click, paste a URL → [text](url).
 $('notesAddLink').addEventListener('click', () => {
   const ta = $('notesText');
-  const start = ta.selectionStart;
-  const end = ta.selectionEnd;
+  const range = getNotesRange();
+  if (!range) { flashBtn('notesAddLink', 'Select text first', '🔗 Link'); return; }
+  const { start, end } = range;
   const selected = ta.value.slice(start, end).trim();
-  if (!selected) {
-    $('notesAddLink').textContent = 'Select text in the notes box first';
-    setTimeout(() => $('notesAddLink').textContent = '🔗 Link selected text', 1800);
-    return;
-  }
+  if (!selected) { flashBtn('notesAddLink', 'Select text first', '🔗 Link'); return; }
   const url = prompt(`Wrap with a link.\n\nSelected text:\n  ${selected}\n\nEnter the URL:`, 'https://');
   if (!url || url === 'https://') return;
   const wrapped = `[${selected}](${url})`;
-  // Preserve any surrounding whitespace the user actually selected
   const before = ta.value.slice(0, start);
   const trailing = ta.value.slice(start, end);
   const leadingWs = trailing.match(/^\s*/)[0];
@@ -1748,7 +1882,62 @@ $('notesAddLink').addEventListener('click', () => {
   ta.focus();
   const newCaret = before.length + leadingWs.length + wrapped.length;
   ta.setSelectionRange(newCaret, newCaret);
+  notesSel = { start: newCaret, end: newCaret };
   update();
+});
+
+// Notes formatting toolbar — wrap the current selection with a markup token,
+// toggling it off if the selection is already wrapped. Whitespace the user
+// happened to include in the selection is preserved outside the token.
+function wrapNotesSelection(btnId, prefix, suffix) {
+  const ta = $('notesText');
+  const range = getNotesRange();
+  if (!range) { flashBtn(btnId, 'Select text first'); return; }
+  const { start, end } = range;
+  const raw = ta.value.slice(start, end);
+  const lead = raw.match(/^\s*/)[0];
+  const trail = raw.match(/\s*$/)[0];
+  const core = raw.slice(lead.length, raw.length - trail.length);
+  if (!core) { flashBtn(btnId, 'Select text first'); return; }
+  let out;
+  if (core.startsWith(prefix) && core.endsWith(suffix) && core.length >= prefix.length + suffix.length) {
+    out = core.slice(prefix.length, core.length - suffix.length); // toggle OFF
+  } else {
+    out = prefix + core + suffix; // toggle ON
+  }
+  ta.value = ta.value.slice(0, start) + lead + out + trail + ta.value.slice(end);
+  const ns = start + lead.length, ne = ns + out.length;
+  ta.focus();
+  ta.setSelectionRange(ns, ne);
+  notesSel = { start: ns, end: ne };
+  update();
+}
+function clearNotesSelection() {
+  const ta = $('notesText');
+  const range = getNotesRange();
+  if (!range) { flashBtn('notesNormal', 'Select text first'); return; }
+  const { start, end } = range;
+  const sel = ta.value.slice(start, end);
+  if (!sel.trim()) { flashBtn('notesNormal', 'Select text first'); return; }
+  const cleaned = sel
+    .replace(/\{\{[or]:([^}]*)\}\}/g, '$1')   // strip color tokens
+    .replace(/\*\*([^*]*)\*\*/g, '$1')        // strip bold
+    .replace(/\*([^*]*)\*/g, '$1');           // strip italics
+  ta.value = ta.value.slice(0, start) + cleaned + ta.value.slice(end);
+  ta.focus();
+  ta.setSelectionRange(start, start + cleaned.length);
+  notesSel = { start, end: start + cleaned.length };
+  update();
+}
+$('notesBold').addEventListener('click', () => wrapNotesSelection('notesBold', '**', '**'));
+$('notesOrange').addEventListener('click', () => wrapNotesSelection('notesOrange', '{{o:', '}}'));
+$('notesRed').addEventListener('click', () => wrapNotesSelection('notesRed', '{{r:', '}}'));
+$('notesNormal').addEventListener('click', clearNotesSelection);
+// Keep the textarea focused (and its selection alive) when a toolbar button is
+// pressed — the real cross-browser fix for "nothing happens when I click B/Red".
+['notesAddLink', 'notesBold', 'notesOrange', 'notesRed', 'notesNormal'].forEach(id => {
+  const b = $(id);
+  if (b) b.addEventListener('mousedown', (e) => e.preventDefault());
 });
 
 // Initial PDF list render + +Add wiring
