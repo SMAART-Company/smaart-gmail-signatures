@@ -38,6 +38,39 @@ jsDelivr serves public GitHub repos globally over HTTPS with aggressive caching 
 - Make the repo public (branding assets are low-sensitivity).
 - Change the **Asset base URL** field in the generator to a public domain, e.g. `https://smaartcompany.com/signatures`, and mirror the three asset folders there.
 
+## Image permanence — so signatures never break
+
+A signature already sent points at fixed image URLs forever. Those URLs keep
+resolving only if three things stay true. Treat these as hard rules:
+
+1. **The repo stays PUBLIC.** jsDelivr only serves public repos. Making this
+   repo private instantly breaks every signature already in every inbox.
+2. **Asset files are APPEND-ONLY. Never delete or rename a file** in
+   `team-images/`, `logos/`, or `social-icons/`. An old signature references an
+   exact path (e.g. `logos/irs-ea.png`); remove or rename it and that signature
+   shows a broken image. To update someone's photo, **keep the same filename**
+   (overwrite in place) or add a new file alongside the old one — never delete.
+3. **Don't rewrite history on `main`.** No force-push, no rebasing published
+   commits. jsDelivr resolves `@main` against live history; rewriting it can
+   orphan asset paths.
+
+After adding or replacing assets, push to `main` and purge the CDN cache so the
+change is served immediately (jsDelivr caches the `@main` tag ~12h):
+
+```
+curl https://purge.jsdelivr.net/gh/SMAART-Company/smaart-gmail-signatures@main/logos/<file>
+```
+
+If a recipient still sees an old/broken image, bump the **Image cache version**
+field in the generator and re-copy — that busts Gmail's image proxy
+(`ci3.googleusercontent.com`), which caches by full URL for ~7 days.
+
+**For a frozen, never-changing reference** (e.g. an executive signature you want
+immutable), set the **Asset base URL** to a pinned commit instead of `@main`:
+`…/smaart-gmail-signatures@<commit-sha>/…`. jsDelivr serves SHA-pinned URLs as
+permanently immutable. Trade-off: assets added in later commits won't appear
+until you bump the SHA.
+
 ## Adding a new teammate
 
 1. Drop their headshot (any size, any format) in `team-images/` as `firstname-lastname.<ext>`.
