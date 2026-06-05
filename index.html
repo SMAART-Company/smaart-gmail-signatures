@@ -293,7 +293,7 @@ Fort Lauderdale, FL 33311</textarea>
     <input id="assetBase" value="https://cdn.jsdelivr.net/gh/SMAART-Company/smaart-gmail-signatures@main" />
     <label for="cacheVer">Image cache version <span class="hint">bump when a photo/logo changes — forces Gmail image proxy to refetch</span></label>
     <input id="cacheVer" value="26" />
-    <label class="toggle" style="margin-top:12px;"><input type="checkbox" id="embedPhoto" checked />Embed photo as base64 <span class="hint">bulletproof — photo lives inside the signature HTML, can't break. Resized client-side at copy time.</span></label>
+    <label class="toggle" style="margin-top:12px;"><input type="checkbox" id="embedPhoto" />Embed photo as base64 <span class="hint">OFF (recommended): photo loads from the CDN like the logos — never an attachment. ON: photo is baked into the HTML, which many clients (Outlook, Apple Mail, Gmail replies) deliver as an <strong>attachment</strong>. Only turn on if the asset repo is private.</span></label>
 
     <label for="outputSize" style="margin-top:12px;">Output size <span class="hint">scales the entire signature proportionally — useful when the original feels too large next to the email body</span></label>
     <select id="outputSize">
