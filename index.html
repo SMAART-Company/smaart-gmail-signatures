@@ -532,7 +532,7 @@ function render(opts = {}) {
     // "Logo instead of photo" — for people who don't want a headshot. Renders a
     // brand logo in the photo square: object-fit:contain (no face-crop) on a
     // white background, with inset padding so the logo doesn't touch the edges.
-    const LOGO_PHOTO = { 'logo-smaart': 'smaart-white-and-navy', 'logo-royale': 'royale' };
+    const LOGO_PHOTO = { 'logo-smaart': 'smaart-white-and-navy', 'logo-royale': 'royale-square' };
     const logoFile = LOGO_PHOTO[v.PHOTO_SLUG];
     const logoPad = Math.max(6, Math.round(size * 0.1));
     const img = logoFile
