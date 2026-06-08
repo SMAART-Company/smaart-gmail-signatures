@@ -581,7 +581,10 @@ function render(opts = {}) {
   // brand logo, then any enabled IRS accreditation badges (Enrolled Agent,
   // Certifying Acceptance Agent). All off by default — purely additive.
   const belowImg = (slug, alt, url) => {
-    const img = `<img src="${v.ASSET_BASE}/logos/${slug}.png${cacheBust}" alt="${esc(alt)}" style="display:inline-block;max-width:${v.PHOTO_SIZE}px;height:auto;border:0;" />`;
+    // ~70% of photo width so the logo reads as a smaller mark under the photo,
+    // not a full-width banner.
+    const belowW = Math.round(v.PHOTO_SIZE * 0.7);
+    const img = `<img src="${v.ASSET_BASE}/logos/${slug}.png${cacheBust}" alt="${esc(alt)}" style="display:inline-block;max-width:${belowW}px;height:auto;border:0;" />`;
     const inner = url ? `<a href="${esc(url)}" style="display:inline-block;">${img}</a>` : img;
     return `<div style="margin-top:10px;text-align:center;line-height:0;">${inner}</div>`;
   };
