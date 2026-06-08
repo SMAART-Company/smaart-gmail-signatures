@@ -108,6 +108,8 @@
     <label for="photoSlug">Photo</label>
     <select id="photoSlug">
       <option value="" selected>— none —</option>
+      <option value="logo-smaart">▣ SMAART logo (instead of photo)</option>
+      <option value="logo-royale">▣ Royale logo (instead of photo)</option>
       <option value="albert-amarente">Albert Amarente</option>
       <option value="alex">Alex Saremi</option>
       <option value="andrea-diaz">Andrea Diaz</option>
@@ -527,7 +529,15 @@ function render(opts = {}) {
     // the img: 50% renders as a perfect circle when width=height=square.
     // square = sharp corners (0), round = circle (50%), squared = subtle rounding (10px)
     const br = v.PHOTO_SHAPE === 'round' ? '50%' : v.PHOTO_SHAPE === 'squared' ? '10px' : '0';
-    const img = `<img src="${v.ASSET_BASE}/team-images/${v.PHOTO_SLUG}.jpg${cacheBust}" width="${size}" height="${size}" alt="${esc(alt)}" style="display:inline-block;width:${size}px;height:${size}px;min-width:${size}px;max-width:${size}px;min-height:${size}px;max-height:${size}px;border:0;border-radius:${br};vertical-align:top;object-fit:cover;" />`;
+    // "Logo instead of photo" — for people who don't want a headshot. Renders a
+    // brand logo in the photo square: object-fit:contain (no face-crop) on a
+    // white background, with inset padding so the logo doesn't touch the edges.
+    const LOGO_PHOTO = { 'logo-smaart': 'smaart-white-and-navy', 'logo-royale': 'royale' };
+    const logoFile = LOGO_PHOTO[v.PHOTO_SLUG];
+    const logoPad = Math.max(6, Math.round(size * 0.1));
+    const img = logoFile
+      ? `<img src="${v.ASSET_BASE}/logos/${logoFile}.png${cacheBust}" width="${size}" height="${size}" alt="${esc(alt)}" style="display:inline-block;width:${size}px;height:${size}px;min-width:${size}px;max-width:${size}px;min-height:${size}px;max-height:${size}px;border:0;border-radius:${br};vertical-align:top;object-fit:contain;background:#FFFFFF;box-sizing:border-box;padding:${logoPad}px;" />`
+      : `<img src="${v.ASSET_BASE}/team-images/${v.PHOTO_SLUG}.jpg${cacheBust}" width="${size}" height="${size}" alt="${esc(alt)}" style="display:inline-block;width:${size}px;height:${size}px;min-width:${size}px;max-width:${size}px;min-height:${size}px;max-height:${size}px;border:0;border-radius:${br};vertical-align:top;object-fit:cover;" />`;
     if (!v.PHOTO_MATTE) return img;
     // Dark-mode matte: wraps the photo in a white-bg padded box. Border-radius
     // on the matte tracks the photo shape (circle gets a circular matte, square
